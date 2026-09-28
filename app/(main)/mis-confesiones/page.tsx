@@ -25,6 +25,20 @@ const ESTADOS: Record<
   },
 };
 
+// ✅ FUNCIÓN ARRIBA DEL COMPONENTE
+function formatearMotivo(motivo: string): string {
+  const motivos: Record<string, string> = {
+    spam: "🚫 Spam o publicidad",
+    ofensivo: "😠 Contenido ofensivo",
+    sexual: "🔞 Contenido sexual",
+    datos: "🔒 Datos personales de terceros",
+    violencia: "⚠️ Violencia o amenazas",
+    normas: "📋 No cumple las normas",
+    otro: "❓ Otro",
+  };
+  return motivos[motivo] ?? motivo;
+}
+
 export default async function MisConfesionesPage() {
   const supabase = await createClient();
   const {
@@ -44,6 +58,7 @@ export default async function MisConfesionesPage() {
       estado,
       anonima,
       motivo_rechazo,
+      detalle_rechazo,
       creado_en
     `
     )
@@ -176,11 +191,16 @@ export default async function MisConfesionesPage() {
 
                   {/* Motivo de rechazo */}
                   {c.estado === "rechazada" && c.motivo_rechazo && (
-                    <div className="mt-3 p-3 rounded-lg bg-error/10 border border-error/30">
-                      <p className="text-xs text-error">
-                        <strong>Motivo:</strong> {c.motivo_rechazo}
+                    <div className="mt-3 p-4 rounded-lg bg-error/10 border border-error/30 space-y-2">
+                      <p className="text-sm text-error font-semibold">
+                        ❌ Motivo: {formatearMotivo(c.motivo_rechazo)}
                       </p>
-                      <p className="text-xs text-texto-suave mt-1">
+                      {c.detalle_rechazo && (
+                        <p className="text-xs text-texto-suave">
+                          {c.detalle_rechazo}
+                        </p>
+                      )}
+                      <p className="text-xs text-texto-suave">
                         Puedes editarla y volver a enviarla
                       </p>
                     </div>

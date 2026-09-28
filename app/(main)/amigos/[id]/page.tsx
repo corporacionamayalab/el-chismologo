@@ -136,7 +136,7 @@ export default async function PerfilUsuarioPage({
                 </p>
                 {perfil.rol === "admin" && (
                   <span className="inline-block mt-3 text-xs font-semibold px-2.5 py-1 rounded-full bg-marca/20 text-marca border border-marca/30">
-                    🎛️ Admin
+                    🎛️ ymix34
                   </span>
                 )}
               </div>

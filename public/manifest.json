@@ -1,0 +1,81 @@
+{
+  "id": "/",
+  "name": "Chismólogo",
+"short_name": "Chismólogo",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait",
+  "background_color": "#0B0B14",
+  "theme_color": "#8B5CF6",
+  "lang": "es",
+  "dir": "ltr",
+  "categories": ["social", "communication", "lifestyle"],
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-192-maskable.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/home.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Inicio de Chismólogo"
+    },
+    {
+      "src": "/screenshots/chat.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Chat en tiempo real"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Confesiones",
+      "short_name": "Confesiones",
+      "description": "Ver confesiones anónimas",
+      "url": "/confesiones",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Amigos",
+      "short_name": "Amigos",
+      "description": "Buscar y chatear con amigos",
+      "url": "/amigos",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Contactos",
+      "short_name": "Contactos",
+      "description": "Anuncios con WhatsApp",
+      "url": "/contactos",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

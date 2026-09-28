@@ -11,6 +11,11 @@ type Perfil = {
   avatar_url: string | null;
   rol: string;
   creado_en: string;
+  bio: string | null;
+  intereses: string[] | null;
+  ciudad: string | null;
+  fecha_nacimiento: string | null;
+  genero: string | null;
 };
 
 export default function PerfilPage() {
@@ -22,6 +27,14 @@ export default function PerfilPage() {
   const [username, setUsername] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
+  // Nuevos estados
+  const [bio, setBio] = useState("");
+  const [intereses, setIntereses] = useState<string[]>([]);
+  const [nuevoInteres, setNuevoInteres] = useState("");
+  const [ciudad, setCiudad] = useState("");
+  const [fechaNacimiento, setFechaNacimiento] = useState("");
+  const [genero, setGenero] = useState("");
+
   const [stats, setStats] = useState({
     confesiones: 0,
     anuncios: 0,
@@ -29,6 +42,7 @@ export default function PerfilPage() {
 
   const [cargando, setCargando] = useState(true);
   const [guardando, setGuardando] = useState(false);
+  const [guardandoInfo, setGuardandoInfo] = useState(false);
   const [subiendoFoto, setSubiendoFoto] = useState(false);
   const [mensaje, setMensaje] = useState<{
     tipo: "ok" | "error";
@@ -53,7 +67,9 @@ export default function PerfilPage() {
 
       const { data: p } = await supabase
         .from("profiles")
-        .select("username, avatar_url, rol, creado_en")
+        .select(
+          "username, avatar_url, rol, creado_en, bio, intereses, ciudad, fecha_nacimiento, genero"
+        )
         .eq("id", user.id)
         .single();
 
@@ -61,6 +77,11 @@ export default function PerfilPage() {
         setPerfil(p as Perfil);
         setUsername(p.username ?? "");
         setAvatarUrl(p.avatar_url);
+        setBio(p.bio ?? "");
+        setIntereses(p.intereses ?? []);
+        setCiudad(p.ciudad ?? "");
+        setFechaNacimiento(p.fecha_nacimiento ?? "");
+        setGenero(p.genero ?? "");
       }
 
       // Estadísticas
@@ -130,6 +151,53 @@ export default function PerfilPage() {
 
     setMensaje({ tipo: "ok", texto: "¡Usuario actualizado! ✅" });
     router.refresh();
+  };
+
+  // Guardar info extra
+  const handleGuardarInfo = async () => {
+    if (!user) return;
+    setMensaje(null);
+    setGuardandoInfo(true);
+
+    const { error } = await supabase
+      .from("profiles")
+      .update({
+        bio: bio.trim() || null,
+        intereses: intereses.length > 0 ? intereses : null,
+        ciudad: ciudad || null,
+        fecha_nacimiento: fechaNacimiento || null,
+        genero: genero || null,
+      })
+      .eq("id", user.id);
+
+    setGuardandoInfo(false);
+
+    if (error) {
+      setMensaje({ tipo: "error", texto: error.message });
+      return;
+    }
+
+    setMensaje({ tipo: "ok", texto: "¡Perfil actualizado! ✅" });
+    router.refresh();
+  };
+
+  const agregarInteres = () => {
+    const limpio = nuevoInteres.trim();
+    if (!limpio) return;
+    if (intereses.includes(limpio)) {
+      setNuevoInteres("");
+      return;
+    }
+    if (intereses.length >= 10) {
+      setMensaje({ tipo: "error", texto: "Máximo 10 intereses" });
+      return;
+    }
+    setIntereses([...intereses, limpio]);
+    setNuevoInteres("");
+  };
+
+  const quitarInteres = (i: string) => {
+    setIntereses(intereses.filter((x) => x !== i));
   };
 
   const handleSubirAvatar = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -252,7 +320,6 @@ export default function PerfilPage() {
                 </div>
               )}
 
-              {/* Botón cambiar */}
               <button
                 onClick={() => fileInputRef.current?.click()}
                 disabled={subiendoFoto}
@@ -284,7 +351,7 @@ export default function PerfilPage() {
               </p>
               {perfil.rol === "admin" && (
                 <span className="inline-block mt-2 text-xs font-semibold px-2 py-0.5 rounded-full bg-marca/20 text-marca border border-marca/30">
-                  🎛️ Admin
+                  🎛️ ymix34
                 </span>
               )}
             </div>
@@ -317,6 +384,140 @@ export default function PerfilPage() {
           <p className="text-xs text-texto-suave mt-2">
             Solo letras, números y guión bajo. Mínimo 3 caracteres.
           </p>
+        </div>
+
+        {/* Card: Sobre mí */}
+        <div className="bg-fondo-card border border-borde rounded-2xl p-6 space-y-5">
+          <h2 className="text-lg font-bold text-texto">
+            ✨ Sobre mí
+          </h2>
+
+          {/* Bio */}
+          <div>
+            <label className="block text-sm font-medium text-texto-suave mb-1.5">
+              Bio (máx 160 caracteres)
+            </label>
+            <textarea
+              value={bio}
+              onChange={(e) => setBio(e.target.value)}
+              maxLength={160}
+              rows={3}
+              placeholder="Cuéntanos algo sobre ti..."
+              className="w-full px-4 py-3 rounded-xl bg-fondo border border-borde text-texto placeholder-texto-suave/50 focus:border-marca focus:outline-none focus:ring-2 focus:ring-marca/20 transition resize-none"
+            />
+            <p className="text-xs text-texto-suave mt-1 text-right">
+              {bio.length}/160
+            </p>
+          </div>
+
+          {/* Intereses */}
+          <div>
+            <label className="block text-sm font-medium text-texto-suave mb-1.5">
+              Intereses (máx 10)
+            </label>
+
+            {intereses.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-3">
+                {intereses.map((i) => (
+                  <span
+                    key={i}
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-marca/10 border border-marca/30 text-marca text-sm"
+                  >
+                    {i}
+                    <button
+                      type="button"
+                      onClick={() => quitarInteres(i)}
+                      className="text-marca/70 hover:text-error transition"
+                    >
+                      ✕
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {intereses.length < 10 && (
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={nuevoInteres}
+                  onChange={(e) => setNuevoInteres(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      agregarInteres();
+                    }
+                  }}
+                  maxLength={20}
+                  placeholder="Ej: Música, viajes, deportes..."
+                  className="flex-1 px-4 py-2 rounded-xl bg-fondo border border-borde text-texto placeholder-texto-suave/50 focus:border-marca focus:outline-none focus:ring-2 focus:ring-marca/20 transition text-sm"
+                />
+                <button
+                  type="button"
+                  onClick={agregarInteres}
+                  disabled={!nuevoInteres.trim()}
+                  className="px-4 py-2 rounded-xl bg-marca hover:bg-marca-hover text-white text-sm font-semibold transition disabled:opacity-50"
+                >
+                  + Añadir
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Ciudad + Género */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-texto-suave mb-1.5">
+                📍 Ciudad
+              </label>
+              <select
+                value={ciudad}
+                onChange={(e) => setCiudad(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl bg-fondo border border-borde text-texto focus:border-marca focus:outline-none focus:ring-2 focus:ring-marca/20 transition"
+              >
+                <option value="">Sin especificar</option>
+                <option value="Trujillo">Trujillo</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-texto-suave mb-1.5">
+                👤 Género
+              </label>
+              <select
+                value={genero}
+                onChange={(e) => setGenero(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl bg-fondo border border-borde text-texto focus:border-marca focus:outline-none focus:ring-2 focus:ring-marca/20 transition"
+              >
+                <option value="">Sin especificar</option>
+                <option value="Hombre">Hombre</option>
+                <option value="Mujer">Mujer</option>
+                <option value="Otro">Otro</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Fecha nacimiento */}
+          <div>
+            <label className="block text-sm font-medium text-texto-suave mb-1.5">
+              🎂 Fecha de nacimiento
+            </label>
+            <input
+              type="date"
+              value={fechaNacimiento}
+              onChange={(e) => setFechaNacimiento(e.target.value)}
+              className="w-full px-4 py-3 rounded-xl bg-fondo border border-borde text-texto focus:border-marca focus:outline-none focus:ring-2 focus:ring-marca/20 transition"
+            />
+          </div>
+
+          {/* Botón guardar */}
+          <button
+            onClick={handleGuardarInfo}
+            disabled={guardandoInfo}
+            className="w-full py-3 rounded-xl bg-gradient-to-r from-marca to-rosa text-white font-semibold hover:from-marca-hover hover:to-rosa-hover transition-all disabled:opacity-50"
+          >
+            {guardandoInfo ? "Guardando..." : "Guardar cambios"}
+          </button>
         </div>
 
         {/* Card: Estadísticas */}

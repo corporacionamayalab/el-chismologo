@@ -1,13 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
-export default function LoginPage() {
+function LoginContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const supabase = createClient();
+
+  const razon = searchParams.get("razon");
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -44,16 +47,30 @@ export default function LoginPage() {
   return (
     <main className="min-h-screen flex items-center justify-center px-6 py-12">
       <div className="w-full max-w-md">
-
-        {/* Logo */}
-        <Link href="/" className="flex items-center justify-center gap-2 mb-8 group">
-          <span className="text-3xl transition-transform group-hover:rotate-12">👀</span>
-          <span className="text-2xl font-black gradient-animated">Chismólogo</span>
+        <Link
+          href="/"
+          className="flex items-center justify-center gap-2 mb-8 group"
+        >
+          <span className="text-3xl transition-transform group-hover:rotate-12">
+            👀
+          </span>
+          <span className="text-2xl font-black gradient-animated">
+            Chismólogo
+          </span>
         </Link>
 
-        {/* Card */}
-        <div className="bg-fondo-card border border-borde rounded-2xl p-8 shadow-2xl shadow-marca/10">
+        {/* Aviso de inactividad */}
+        {razon === "inactividad" && (
+          <div className="mb-6 p-4 rounded-xl bg-neon/10 border border-neon/30 text-sm">
+            <p className="text-neon font-semibold mb-1">⏰ Sesión cerrada</p>
+            <p className="text-texto-suave text-xs">
+              Tu sesión se cerró automáticamente por inactividad. Vuelve a
+              iniciar sesión.
+            </p>
+          </div>
+        )}
 
+        <div className="bg-fondo-card border border-borde rounded-2xl p-8 shadow-2xl shadow-marca/10">
           <h1 className="text-2xl font-bold text-texto text-center">
             Iniciar sesión
           </h1>
@@ -61,17 +78,13 @@ export default function LoginPage() {
             Bienvenido de nuevo 👋
           </p>
 
-          {/* Error */}
           {error && (
             <div className="mt-6 p-3 rounded-lg bg-error/10 border border-error/30 text-error text-sm">
               {error}
             </div>
           )}
 
-          {/* Formulario */}
           <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-
-            {/* Email */}
             <div>
               <label className="block text-sm font-medium text-texto-suave mb-1.5">
                 Email
@@ -86,7 +99,6 @@ export default function LoginPage() {
               />
             </div>
 
-            {/* Contraseña */}
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <label className="block text-sm font-medium text-texto-suave">
@@ -109,7 +121,6 @@ export default function LoginPage() {
               />
             </div>
 
-            {/* Botón */}
             <button
               type="submit"
               disabled={cargando}
@@ -119,32 +130,48 @@ export default function LoginPage() {
             </button>
           </form>
 
-          {/* Divider */}
           <div className="my-6 flex items-center gap-3">
             <div className="flex-1 h-px bg-borde" />
             <span className="text-xs text-texto-suave">o</span>
             <div className="flex-1 h-px bg-borde" />
           </div>
 
-          {/* Link a registro */}
           <p className="text-sm text-center text-texto-suave">
             ¿No tienes cuenta?{" "}
-            <Link href="/register" className="text-marca hover:text-rosa font-semibold transition">
+            <Link
+              href="/register"
+              className="text-marca hover:text-rosa font-semibold transition"
+            >
               Regístrate
             </Link>
           </p>
-
         </div>
 
-        {/* Aviso abajo */}
         <p className="text-xs text-center text-texto-suave mt-6">
           Al iniciar sesión aceptas nuestros{" "}
-          <Link href="/terminos" className="underline hover:text-marca">Términos</Link>{" "}
+          <Link href="/terminos" className="underline hover:text-marca">
+            Términos
+          </Link>{" "}
           y{" "}
-          <Link href="/privacidad" className="underline hover:text-marca">Política de privacidad</Link>
+          <Link href="/privacidad" className="underline hover:text-marca">
+            Política de privacidad
+          </Link>
         </p>
-
       </div>
     </main>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="min-h-screen flex items-center justify-center">
+          <p className="text-texto-suave">Cargando...</p>
+        </main>
+      }
+    >
+      <LoginContent />
+    </Suspense>
   );
 }

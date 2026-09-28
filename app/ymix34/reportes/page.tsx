@@ -18,7 +18,7 @@ const MOTIVOS: Record<string, { label: string; emoji: string; color: string }> =
   otro: { label: "Otro", emoji: "❓", color: "text-texto-suave" },
 };
 
-export default async function AdminReportesPage({
+export default async function ymix34ReportesPage({
   searchParams,
 }: {
   searchParams: Promise<{ filtro?: string }>;
@@ -73,7 +73,7 @@ export default async function AdminReportesPage({
         {FILTROS.map((f) => (
           <Link
             key={f.valor}
-            href={`/admin/reportes?filtro=${f.valor}`}
+            href={`/ymix34/reportes?filtro=${f.valor}`}
             className={`
               px-4 py-2 rounded-xl text-sm font-medium transition-all
               ${

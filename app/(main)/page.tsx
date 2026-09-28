@@ -24,10 +24,7 @@ export default function Home() {
           <span className="gradient-animated">Chismólogo</span>
         </h1>
 
-        {/* Slogan */}
-        <p className="mt-6 text-xl md:text-2xl text-texto-suave font-light">
-          Aquí todo se sabe 👀
-        </p>
+        
 
         {/* Subtítulo */}
         <p className="mt-6 max-w-xl text-sm md:text-base text-texto-suave leading-relaxed">

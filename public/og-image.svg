@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0B0B14"/>
+      <stop offset="100%" stop-color="#1E1E38"/>
+    </linearGradient>
+    <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#8B5CF6"/>
+      <stop offset="50%" stop-color="#EC4899"/>
+      <stop offset="100%" stop-color="#FACC15"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bgGrad)"/>
+
+  <circle cx="1000" cy="150" r="300" fill="#8B5CF6" opacity="0.15"/>
+  <circle cx="200" cy="500" r="250" fill="#EC4899" opacity="0.15"/>
+
+  <text x="600" y="280" font-family="system-ui, -apple-system, sans-serif" font-size="120" font-weight="900" text-anchor="middle" fill="url(#textGrad)">
+    👀 Chismólogo
+  </text>
+
+  <text x="600" y="370" font-family="system-ui, -apple-system, sans-serif" font-size="40" text-anchor="middle" fill="#A1A1AA">
+    Aquí todo se sabe
+  </text>
+
+  <text x="600" y="480" font-family="system-ui, -apple-system, sans-serif" font-size="28" text-anchor="middle" fill="#F5F5F7">
+    📝 Confesiones · 💘 Contactos · 👥 Amigos
+  </text>
+</svg>

@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import CampanitaNotificaciones from "./CampanitaNotificaciones";
+import BotonTema from "./BotonTema";
 import type { User } from "@supabase/supabase-js";
 
 export default function Header() {
@@ -52,7 +54,9 @@ export default function Header() {
           .select("username")
           .eq("id", data.user.id)
           .single();
-        setUsername(profile?.username ?? data.user.email?.split("@")[0] ?? "usuario");
+        setUsername(
+          profile?.username ?? data.user.email?.split("@")[0] ?? "usuario"
+        );
       }
       setCargando(false);
     };
@@ -68,7 +72,9 @@ export default function Header() {
           .eq("id", session.user.id)
           .single()
           .then(({ data }) => {
-            setUsername(data?.username ?? session.user.email?.split("@")[0] ?? "usuario");
+            setUsername(
+              data?.username ?? session.user.email?.split("@")[0] ?? "usuario"
+            );
           });
       } else {
         setUsername("");
@@ -94,10 +100,22 @@ export default function Header() {
     router.refresh();
   };
 
+  const toggleTemaMobile = () => {
+    const esOscuro = document.documentElement.classList.contains("dark");
+    if (esOscuro) {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("tema", "light");
+    } else {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("tema", "dark");
+    }
+    setMenuAbierto(false);
+  };
+
   const enlaces = [
-    { href: "/confesiones", label: "Confesiones", emoji: "📝", color: "marca" },
-    { href: "/contactos", label: "Contactos", emoji: "💘", color: "rosa", destacado: true },
-    { href: "/amigos", label: "Amigos", emoji: "👥", color: "neon" },
+    { href: "/confesiones", label: "Confesiones", emoji: "📝" },
+    { href: "/contactos", label: "Contactos", emoji: "💘" },
+    { href: "/amigos", label: "Amigos", emoji: "👥" },
   ];
 
   const inicial = username?.[0]?.toUpperCase() ?? "?";
@@ -119,7 +137,6 @@ export default function Header() {
         `}
       >
         <div className="max-w-6xl mx-auto flex items-center justify-between px-4 py-3">
-
           {/* 🔤 LOGO */}
           <Link href="/" className="flex items-center gap-2 group relative">
             <span className="text-2xl transition-transform duration-300 group-hover:rotate-12 group-hover:scale-110">
@@ -136,44 +153,24 @@ export default function Header() {
               <Link
                 key={enlace.href}
                 href={enlace.href}
-                className={`
-                  group relative flex items-center gap-2 px-4 py-2 rounded-xl
-                  text-sm font-medium transition-all duration-300
-                  ${
-                    enlace.destacado
-                      ? "text-rosa bg-rosa/10 hover:bg-rosa/20 badge-hot shadow-lg shadow-rosa/10"
-                      : "text-texto-suave hover:text-texto hover:bg-fondo-card"
-                  }
-                `}
+                className="group relative flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-texto-suave hover:text-texto hover:bg-fondo-card transition-all duration-300"
               >
                 <span className="text-base transition-transform duration-300 group-hover:scale-125">
                   {enlace.emoji}
                 </span>
                 <span>{enlace.label}</span>
 
-                {enlace.destacado && (
-                  <span className="absolute -top-1 -right-1 flex h-3 w-3">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rosa opacity-75" />
-                    <span className="relative inline-flex rounded-full h-3 w-3 bg-rosa" />
-                  </span>
-                )}
-
-                {!enlace.destacado && (
-                  <span
-                    className={`
-                      absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] w-0
-                      bg-gradient-to-r from-marca to-rosa
-                      transition-all duration-300
-                      group-hover:w-2/3
-                    `}
-                  />
-                )}
+                {/* Subrayado animado al hover */}
+                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] w-0 bg-gradient-to-r from-marca to-rosa transition-all duration-300 group-hover:w-2/3" />
               </Link>
             ))}
           </nav>
 
           {/* 🔐 ZONA DERECHA (escritorio) */}
           <div className="hidden md:flex items-center gap-3">
+            {/* 🌗 Botón tema */}
+            <BotonTema />
+
             {cargando ? (
               <div className="w-24 h-9 rounded-xl bg-fondo-card animate-pulse" />
             ) : user ? (
@@ -185,6 +182,9 @@ export default function Header() {
                 >
                   + Confesar
                 </Link>
+
+                {/* 🔔 Campanita */}
+                <CampanitaNotificaciones />
 
                 {/* Menú usuario */}
                 <div className="relative" ref={menuUsuarioRef}>
@@ -206,7 +206,12 @@ export default function Header() {
                       viewBox="0 0 24 24"
                       stroke="currentColor"
                     >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
                     </svg>
                   </button>
 
@@ -214,7 +219,9 @@ export default function Header() {
                   {menuUsuario && (
                     <div className="absolute right-0 mt-2 w-56 bg-fondo-card border border-borde rounded-xl shadow-2xl shadow-marca/20 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
                       <div className="p-3 border-b border-borde">
-                        <p className="text-xs text-texto-suave">Conectado como</p>
+                        <p className="text-xs text-texto-suave">
+                          Conectado como
+                        </p>
                         <p className="text-sm font-semibold text-texto truncate">
                           @{username}
                         </p>
@@ -241,6 +248,20 @@ export default function Header() {
                           className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-texto-suave hover:bg-fondo-card-hover hover:text-texto transition"
                         >
                           <span>💘</span> Mis anuncios
+                        </Link>
+                        <Link
+                          href="/mensajes"
+                          onClick={() => setMenuUsuario(false)}
+                          className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-texto-suave hover:bg-fondo-card-hover hover:text-texto transition"
+                        >
+                          <span>💬</span> Mensajes
+                        </Link>
+                        <Link
+                          href="/notificaciones"
+                          onClick={() => setMenuUsuario(false)}
+                          className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-texto-suave hover:bg-fondo-card-hover hover:text-texto transition"
+                        >
+                          <span>🔔</span> Notificaciones
                         </Link>
                       </div>
 
@@ -303,7 +324,6 @@ export default function Header() {
               `}
             />
           </button>
-
         </div>
       </header>
 
@@ -313,7 +333,11 @@ export default function Header() {
         className={`
           md:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40
           transition-opacity duration-300
-          ${menuAbierto ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}
+          ${
+            menuAbierto
+              ? "opacity-100 pointer-events-auto"
+              : "opacity-0 pointer-events-none"
+          }
         `}
       />
 
@@ -325,7 +349,7 @@ export default function Header() {
           transition-all duration-500 ease-out overflow-hidden
           ${
             menuAbierto
-              ? "max-h-[600px] opacity-100 translate-y-0"
+              ? "max-h-[700px] opacity-100 translate-y-0"
               : "max-h-0 opacity-0 -translate-y-4"
           }
         `}
@@ -340,21 +364,16 @@ export default function Header() {
               className={`
                 flex items-center gap-3 px-4 py-3 rounded-xl
                 text-sm font-medium transition-all duration-300
-                ${menuAbierto ? "translate-x-0 opacity-100" : "-translate-x-4 opacity-0"}
                 ${
-                  enlace.destacado
-                    ? "text-rosa bg-rosa/10 border border-rosa/30"
-                    : "text-texto-suave hover:bg-fondo-card-hover hover:text-texto"
+                  menuAbierto
+                    ? "translate-x-0 opacity-100"
+                    : "-translate-x-4 opacity-0"
                 }
+                text-texto-suave hover:bg-fondo-card-hover hover:text-texto
               `}
             >
               <span className="text-lg">{enlace.emoji}</span>
               <span>{enlace.label}</span>
-              {enlace.destacado && (
-                <span className="ml-auto text-xs bg-rosa text-white px-2 py-0.5 rounded-full">
-                  🔥 HOT
-                </span>
-              )}
             </Link>
           ))}
 
@@ -383,12 +402,35 @@ export default function Header() {
               </Link>
 
               <Link
+                href="/notificaciones"
+                onClick={() => setMenuAbierto(false)}
+                className="px-4 py-3 rounded-xl text-sm text-texto-suave hover:bg-fondo-card-hover hover:text-texto transition text-center"
+              >
+                🔔 Notificaciones
+              </Link>
+
+              <Link
+                href="/mensajes"
+                onClick={() => setMenuAbierto(false)}
+                className="px-4 py-3 rounded-xl text-sm text-texto-suave hover:bg-fondo-card-hover hover:text-texto transition text-center"
+              >
+                💬 Mensajes
+              </Link>
+
+              <Link
                 href="/perfil"
                 onClick={() => setMenuAbierto(false)}
                 className="px-4 py-3 rounded-xl text-sm text-texto-suave hover:bg-fondo-card-hover hover:text-texto transition text-center"
               >
                 👤 Mi perfil
               </Link>
+
+              <button
+                onClick={toggleTemaMobile}
+                className="px-4 py-3 rounded-xl text-sm text-texto-suave hover:bg-fondo-card-hover hover:text-texto transition text-center"
+              >
+                🌗 Cambiar tema
+              </button>
 
               <button
                 onClick={cerrarSesion}

@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 
 export const revalidate = 0;
 
-export default async function AdminDashboardPage() {
+export default async function ymix34DashboardPage() {
   const supabase = await createClient();
 
   // Contadores
@@ -55,7 +55,7 @@ export default async function AdminDashboardPage() {
       emoji: "⏳",
       color: "text-neon",
       bg: "bg-neon/10",
-      href: "/admin/pendientes",
+      href: "/ymix34/pendientes",
       destacado: totalPendientes > 0,
     },
     {
@@ -64,7 +64,7 @@ export default async function AdminDashboardPage() {
       emoji: "🚨",
       color: "text-error",
       bg: "bg-error/10",
-      href: "/admin/reportes",
+      href: "/ymix34/reportes",
       destacado: (reportesPendientes ?? 0) > 0,
     },
     {
@@ -73,7 +73,7 @@ export default async function AdminDashboardPage() {
       emoji: "📝",
       color: "text-marca",
       bg: "bg-marca/10",
-      href: "/admin/confesiones",
+      href: "/ymix34/confesiones",
     },
     {
       label: "Contactos aprobados",
@@ -81,7 +81,7 @@ export default async function AdminDashboardPage() {
       emoji: "💘",
       color: "text-rosa",
       bg: "bg-rosa/10",
-      href: "/admin/contactos",
+      href: "/ymix34/contactos",
     },
     {
       label: "Usuarios totales",
@@ -89,7 +89,7 @@ export default async function AdminDashboardPage() {
       emoji: "👥",
       color: "text-exito",
       bg: "bg-exito/10",
-      href: "/admin/usuarios",
+      href: "/ymix34/usuarios",
     },
   ];
 
@@ -108,8 +108,8 @@ export default async function AdminDashboardPage() {
       {/* Alerta pendientes */}
       {totalPendientes > 0 && (
         <Link
-          href="/admin/pendientes"
-          className="block p-4 rounded-2xl bg-gradient-to-r from-neon/20 to-marca/20 border border-neon/40 hover:border-neon transition group"
+          href="/ymix34/pendientes"
+          className="block p-4 rounded-2xl bg-linear-to-r from-neon/20 to-marca/20 border border-neon/40 hover:border-neon transition group"
         >
           <div className="flex items-center gap-3">
             <span className="text-3xl animate-pulse">🔔</span>

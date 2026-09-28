@@ -31,13 +31,13 @@ export async function proxy(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // 🔒 Proteger rutas admin
-  if (request.nextUrl.pathname.startsWith("/admin")) {
+  // 🔒 Proteger panel de admin (URL secreta: /ymix34)
+  if (request.nextUrl.pathname.startsWith("/ymix34")) {
     if (!user) {
       return NextResponse.redirect(new URL("/login", request.url));
     }
 
-    // Verificar rol admin
+    // Verificar rol admin (el rol sigue siendo "admin")
     const { data: perfil } = await supabase
       .from("profiles")
       .select("rol")

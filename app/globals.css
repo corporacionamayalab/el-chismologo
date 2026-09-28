@@ -1,6 +1,35 @@
 @import "tailwindcss";
 
+/* ==========================================
+   ☀️ TEMA CLARO (por defecto)
+   ========================================== */
 @theme {
+  /* Fondos */
+  --color-fondo: #F5F5F7;
+  --color-fondo-card: #FFFFFF;
+  --color-fondo-card-hover: #F0F0F5;
+  --color-borde: #E4E4E9;
+
+  /* Marca */
+  --color-marca: #7C3AED;
+  --color-marca-hover: #6D28D9;
+  --color-rosa: #DB2777;
+  --color-rosa-hover: #BE185D;
+  --color-neon: #CA8A04;
+
+  /* Texto */
+  --color-texto: #0B0B14;
+  --color-texto-suave: #6B6B7B;
+
+  /* Estados */
+  --color-exito: #10B981;
+  --color-error: #EF4444;
+}
+
+/* ==========================================
+   🌙 TEMA OSCURO
+   ========================================== */
+html.dark {
   --color-fondo: #0B0B14;
   --color-fondo-card: #16162A;
   --color-fondo-card-hover: #1E1E38;
@@ -14,14 +43,103 @@
 
   --color-texto: #F5F5F7;
   --color-texto-suave: #A1A1AA;
-
-  --color-exito: #10B981;
-  --color-error: #EF4444;
 }
 
+/* ==========================================
+   ⚙️ Estilos base
+   ========================================== */
 html,
 body {
-  background-color: #0B0B14;
-  color: #F5F5F7;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background-color: var(--color-fondo);
+  color: var(--color-texto);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+* {
+  border-color: var(--color-borde);
+}
+
+/* ==========================================
+   ✨ Animaciones globales
+   ========================================== */
+@keyframes gradient-shift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(236, 72, 153, 0.5);
+  }
+}
+
+.gradient-animated {
+  background: linear-gradient(90deg, #8B5CF6, #EC4899, #FACC15, #EC4899, #8B5CF6);
+  background-size: 300% 100%;
+  animation: gradient-shift 6s ease infinite;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.glow-marca {
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+  transition: all 0.3s ease;
+}
+
+.glow-marca:hover {
+  box-shadow: 0 0 30px rgba(139, 92, 246, 0.7),
+              0 0 60px rgba(236, 72, 153, 0.4);
+  transform: translateY(-2px);
+}
+
+.badge-hot {
+  position: relative;
+}
+
+.badge-hot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.4), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.badge-hot:hover::after {
+  opacity: 1;
+}
+
+/* ==========================================
+   🎨 Scrollbar
+   ========================================== */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-fondo);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #8B5CF6, #EC4899);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #7C3AED, #DB2777);
+}
+
+::selection {
+  background: #8B5CF6;
+  color: white;
 }
