@@ -1,7 +1,8 @@
 {
   "id": "/",
   "name": "Chismólogo",
-"short_name": "Chismólogo",
+  "short_name": "Chismólogo",
+  "description": "Confesiones anónimas, contactos y amigos. Aquí todo se sabe 👀",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
@@ -37,22 +38,6 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
-    }
-  ],
-  "screenshots": [
-    {
-      "src": "/screenshots/home.png",
-      "sizes": "1080x1920",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Inicio de Chismólogo"
-    },
-    {
-      "src": "/screenshots/chat.png",
-      "sizes": "1080x1920",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Chat en tiempo real"
     }
   ],
   "shortcuts": [
