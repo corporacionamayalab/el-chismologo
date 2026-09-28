@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "online.chismologo.app",
+        "sha256_cert_fingerprints": ["68:DB:C1:9A:DA:80:94:A0:5C:7F:80:46:FF:3C:BF:F9:56:FA:F7:44:85:93:AD:A1:9C:27:3E:0A:DB:C4:83:C0"]
+      }
+    }]
