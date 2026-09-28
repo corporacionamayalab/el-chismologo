@@ -45,7 +45,7 @@ export default async function ChatPage({
   // Mensajes entre ambos
   const { data: mensajes } = await supabase
     .from("mensajes")
-    .select("id, contenido, emisor_id, receptor_id, leido, creado_en")
+    .select("*")
     .or(
       `and(emisor_id.eq.${user.id},receptor_id.eq.${id}),and(emisor_id.eq.${id},receptor_id.eq.${user.id})`
     )
