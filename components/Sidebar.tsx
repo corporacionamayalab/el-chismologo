@@ -47,7 +47,6 @@ export default async function Sidebar() {
     .gte("creado_en", hace7dias.toISOString())
     .limit(20);
 
-  // Calcular reacciones de esas confesiones
   let topConReacciones: { id: string; titulo: string; reacciones: number }[] = [];
 
   if (topConfesiones && topConfesiones.length > 0) {
@@ -69,7 +68,6 @@ export default async function Sidebar() {
       .slice(0, 5);
   }
 
-  // Si no hay de la semana, traer las más populares de siempre
   if (topConReacciones.length === 0) {
     const { data: todas } = await supabase
       .from("confesiones")
@@ -118,10 +116,10 @@ export default async function Sidebar() {
       )
       .or(`solicitante_id.eq.${user.id},receptor_id.eq.${user.id}`)
       .eq("estado", "aceptada")
-      .limit(10);
+      .limit(20);
 
     if (amistades) {
-      amigos = amistades
+      const amigosRaw = amistades
         .map((a) => {
           const sol = Array.isArray(a.solicitante)
             ? a.solicitante[0]
@@ -132,6 +130,11 @@ export default async function Sidebar() {
           return a.solicitante_id === user.id ? rec : sol;
         })
         .filter(Boolean) as typeof amigos;
+
+      // 🧹 Deduplicar por id
+      amigos = Array.from(
+        new Map(amigosRaw.map((a) => [a.id, a])).values()
+      );
 
       // Ordenar: online primero
       amigos.sort((a, b) => {
@@ -173,10 +176,10 @@ export default async function Sidebar() {
               >
                 <span
                   className={`
-                    flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold
+                    shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold
                     ${
                       i === 0
-                        ? "bg-gradient-to-br from-neon to-rosa text-fondo"
+                        ? "bg-gradient-to-br from-marca to-rosa text-white"
                         : "bg-fondo border border-borde text-texto-suave"
                     }
                   `}
@@ -219,7 +222,7 @@ export default async function Sidebar() {
               </p>
               <Link
                 href="/amigos/buscar"
-                className="inline-block text-xs px-3 py-1.5 rounded-lg bg-neon/10 border border-neon/30 text-neon hover:bg-neon/20 transition"
+                className="inline-block text-xs px-3 py-1.5 rounded-lg bg-marca/10 border border-marca/30 text-marca hover:bg-marca/20 transition"
               >
                 🔍 Buscar personas
               </Link>

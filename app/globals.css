@@ -2,47 +2,60 @@
 
 /* ==========================================
    ☀️ TEMA CLARO (por defecto)
+   Paleta: SOLO Celeste + Rosa
    ========================================== */
 @theme {
   /* Fondos */
-  --color-fondo: #F5F5F7;
+  --color-fondo: #F5F8FC;
   --color-fondo-card: #FFFFFF;
-  --color-fondo-card-hover: #F0F0F5;
-  --color-borde: #E4E4E9;
+  --color-fondo-card-hover: #EEF4FB;
+  --color-borde: #E2E8F0;
 
-  /* Marca */
-  --color-marca: #7C3AED;
-  --color-marca-hover: #6D28D9;
-  --color-rosa: #DB2777;
-  --color-rosa-hover: #BE185D;
-  --color-neon: #CA8A04;
+  /* Marca principal — CELESTE */
+  --color-marca: #38BDF8;
+  --color-marca-hover: #0EA5E9;
+  --color-marca-suave: #E0F2FE;
+
+  /* Secundario — ROSA */
+  --color-rosa: #F472B6;
+  --color-rosa-hover: #EC4899;
+  --color-rosa-suave: #FCE7F3;
 
   /* Texto */
-  --color-texto: #0B0B14;
-  --color-texto-suave: #6B6B7B;
+  --color-texto: #0F172A;
+  --color-texto-suave: #64748B;
 
-  /* Estados */
-  --color-exito: #10B981;
-  --color-error: #EF4444;
+  /* Estados — solo celeste/rosa/neutros */
+  --color-exito: #38BDF8;
+  --color-error: #F472B6;
 }
 
 /* ==========================================
    🌙 TEMA OSCURO
    ========================================== */
 html.dark {
-  --color-fondo: #0B0B14;
-  --color-fondo-card: #16162A;
-  --color-fondo-card-hover: #1E1E38;
-  --color-borde: #23233A;
+  --color-fondo: #0A0E1A;
+  --color-fondo-card: #141B2E;
+  --color-fondo-card-hover: #1C2540;
+  --color-borde: #1E293B;
 
-  --color-marca: #8B5CF6;
-  --color-marca-hover: #7C3AED;
-  --color-rosa: #EC4899;
-  --color-rosa-hover: #DB2777;
-  --color-neon: #FACC15;
+  /* Marca principal — CELESTE (más claro) */
+  --color-marca: #7DD3FC;
+  --color-marca-hover: #38BDF8;
+  --color-marca-suave: #0C4A6E;
 
-  --color-texto: #F5F5F7;
-  --color-texto-suave: #A1A1AA;
+  /* Secundario — ROSA (más claro) */
+  --color-rosa: #F9A8D4;
+  --color-rosa-hover: #F472B6;
+  --color-rosa-suave: #831843;
+
+  /* Texto */
+  --color-texto: #F1F5F9;
+  --color-texto-suave: #94A3B8;
+
+  /* Estados */
+  --color-exito: #7DD3FC;
+  --color-error: #F9A8D4;
 }
 
 /* ==========================================
@@ -60,7 +73,7 @@ body {
 }
 
 /* ==========================================
-   ✨ Animaciones globales
+   ✨ Animaciones — solo celeste ↔ rosa
    ========================================== */
 @keyframes gradient-shift {
   0%, 100% {
@@ -71,35 +84,48 @@ body {
   }
 }
 
-@keyframes glow-pulse {
-  0%, 100% {
-    box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
-  }
-  50% {
-    box-shadow: 0 0 30px rgba(236, 72, 153, 0.5);
-  }
-}
-
+/* Degradado animado — Celeste → Rosa → Celeste */
 .gradient-animated {
-  background: linear-gradient(90deg, #8B5CF6, #EC4899, #FACC15, #EC4899, #8B5CF6);
-  background-size: 300% 100%;
-  animation: gradient-shift 6s ease infinite;
+  background: linear-gradient(
+    90deg,
+    #38BDF8,
+    #F472B6,
+    #38BDF8
+  );
+  background-size: 200% 100%;
+  animation: gradient-shift 5s ease infinite;
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
+/* Glow celeste */
 .glow-marca {
-  box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
   transition: all 0.3s ease;
 }
 
 .glow-marca:hover {
-  box-shadow: 0 0 30px rgba(139, 92, 246, 0.7),
-              0 0 60px rgba(236, 72, 153, 0.4);
+  box-shadow:
+    0 0 30px rgba(56, 189, 248, 0.7),
+    0 0 60px rgba(244, 114, 182, 0.4);
   transform: translateY(-2px);
 }
 
+/* Glow rosa */
+.glow-rosa {
+  box-shadow: 0 0 20px rgba(244, 114, 182, 0.4);
+  transition: all 0.3s ease;
+}
+
+.glow-rosa:hover {
+  box-shadow:
+    0 0 30px rgba(244, 114, 182, 0.7),
+    0 0 60px rgba(56, 189, 248, 0.4);
+  transform: translateY(-2px);
+}
+
+/* Badge "hot" */
 .badge-hot {
   position: relative;
 }
@@ -109,7 +135,11 @@ body {
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: linear-gradient(135deg, rgba(236, 72, 153, 0.4), transparent);
+  background: linear-gradient(
+    135deg,
+    rgba(244, 114, 182, 0.4),
+    transparent
+  );
   opacity: 0;
   transition: opacity 0.3s ease;
   pointer-events: none;
@@ -120,7 +150,7 @@ body {
 }
 
 /* ==========================================
-   🎨 Scrollbar
+   🎨 Scrollbar — Celeste → Rosa
    ========================================== */
 ::-webkit-scrollbar {
   width: 10px;
@@ -131,15 +161,65 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #8B5CF6, #EC4899);
+  background: linear-gradient(180deg, #38BDF8, #F472B6);
   border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #7C3AED, #DB2777);
+  background: linear-gradient(180deg, #0EA5E9, #EC4899);
 }
 
 ::selection {
-  background: #8B5CF6;
+  background: #38BDF8;
   color: white;
+}
+
+/* ==========================================
+   💗 Utilidades para género
+   ========================================== */
+
+/* Femenino — Rosa */
+.bg-femenino {
+  background: linear-gradient(135deg, #F472B6, #EC4899);
+}
+
+.bg-femenino-suave {
+  background: var(--color-rosa-suave);
+  color: var(--color-rosa-hover);
+}
+
+/* Masculino — Celeste */
+.bg-masculino {
+  background: linear-gradient(135deg, #38BDF8, #0EA5E9);
+}
+
+.bg-masculino-suave {
+  background: var(--color-marca-suave);
+  color: var(--color-marca-hover);
+}
+
+/* Mixto / Neutro — Celeste + Rosa */
+.bg-mixto {
+  background: linear-gradient(135deg, #38BDF8, #F472B6);
+}
+
+/* ==========================================
+   💫 Efectos premium
+   ========================================== */
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+html.dark .glass {
+  background: rgba(20, 27, 46, 0.7);
+}
+
+.sombra-suave {
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.08);
+}
+
+html.dark .sombra-suave {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 }

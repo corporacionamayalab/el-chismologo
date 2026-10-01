@@ -12,7 +12,7 @@ const ESTADOS: Record<
   pendiente: {
     label: "En revisión",
     emoji: "⏳",
-    clases: "text-neon bg-neon/10 border-neon/30",
+    clases: "text-marca bg-marca/10 border-marca/30",
   },
   aprobada: {
     label: "Publicado",
@@ -34,7 +34,6 @@ export default async function MisAnunciosPage() {
 
   if (!user) redirect("/login");
 
-  // Mis anuncios
   const { data: anuncios, error } = await supabase
     .from("contactos")
     .select(
@@ -56,7 +55,6 @@ export default async function MisAnunciosPage() {
     .eq("user_id", user.id)
     .order("creado_en", { ascending: false });
 
-  // Vistas
   const ids = anuncios?.map((a) => a.id) ?? [];
 
   const { data: vistas } = ids.length
@@ -79,11 +77,9 @@ export default async function MisAnunciosPage() {
   return (
     <main className="min-h-screen py-10 px-6">
       <div className="max-w-4xl mx-auto">
-
-        {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-10">
           <div>
-            <h1 className="text-4xl md:text-5xl font-black bg-gradient-to-r from-rosa to-marca bg-clip-text text-transparent">
+            <h1 className="text-4xl md:text-5xl font-black gradient-animated">
               Mis anuncios
             </h1>
             <p className="text-sm text-texto-suave mt-2">
@@ -93,7 +89,7 @@ export default async function MisAnunciosPage() {
 
           <Link
             href="/contactos/nuevo"
-            className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-rosa to-marca text-white font-semibold hover:from-rosa-hover hover:to-marca-hover transition-all hover:scale-105 shadow-lg shadow-rosa/20"
+            className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-marca to-rosa text-white font-semibold hover:opacity-90 transition-all hover:scale-105 shadow-lg shadow-marca/20"
           >
             + Nuevo
           </Link>
@@ -105,7 +101,6 @@ export default async function MisAnunciosPage() {
           </div>
         )}
 
-        {/* Estado vacío */}
         {!anuncios?.length && !error && (
           <div className="text-center py-20 bg-fondo-card border border-borde rounded-2xl">
             <div className="text-6xl mb-4">💘</div>
@@ -117,14 +112,13 @@ export default async function MisAnunciosPage() {
             </p>
             <Link
               href="/contactos/nuevo"
-              className="inline-block px-6 py-3 rounded-xl bg-gradient-to-r from-rosa to-marca text-white font-semibold hover:from-rosa-hover hover:to-marca-hover transition"
+              className="inline-block px-6 py-3 rounded-xl bg-gradient-to-r from-marca to-rosa text-white font-semibold hover:opacity-90 transition"
             >
               Publicar mi primer anuncio
             </Link>
           </div>
         )}
 
-        {/* Lista */}
         <div className="grid gap-4">
           {anuncios?.map((a) => {
             const estado = ESTADOS[a.estado] ?? ESTADOS.pendiente;
@@ -132,11 +126,9 @@ export default async function MisAnunciosPage() {
             return (
               <div
                 key={a.id}
-                className="group bg-fondo-card border border-borde rounded-2xl overflow-hidden hover:border-rosa/30 transition-all relative"
+                className="group bg-fondo-card border border-borde rounded-2xl overflow-hidden hover:border-marca/30 transition-all relative"
               >
                 <div className="flex flex-col sm:flex-row">
-
-                  {/* Foto */}
                   {a.imagen_url && (
                     <div className="sm:w-40 h-40 sm:h-auto sm:min-h-full bg-fondo flex-shrink-0 overflow-hidden">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -148,16 +140,10 @@ export default async function MisAnunciosPage() {
                     </div>
                   )}
 
-                  {/* Contenido */}
                   <div className="flex-1 p-6 min-w-0">
-
-                    {/* Header */}
                     <div className="flex items-center gap-2 flex-wrap mb-3">
                       <span
-                        className={`
-                          text-xs font-semibold px-2.5 py-1 rounded-full border
-                          ${estado.clases}
-                        `}
+                        className={`text-xs font-semibold px-2.5 py-1 rounded-full border ${estado.clases}`}
                       >
                         {estado.emoji} {estado.label}
                       </span>
@@ -173,12 +159,10 @@ export default async function MisAnunciosPage() {
                       </span>
                     </div>
 
-                    {/* Título */}
-                    <h2 className="text-xl font-bold text-texto group-hover:text-rosa transition-colors">
+                    <h2 className="text-xl font-bold text-texto group-hover:text-marca transition-colors">
                       {a.titulo}
                     </h2>
 
-                    {/* Chips */}
                     <div className="flex flex-wrap gap-2 mt-2 text-xs text-texto-suave">
                       {a.edad && (
                         <span className="px-2 py-0.5 rounded-full bg-fondo border border-borde">
@@ -197,12 +181,10 @@ export default async function MisAnunciosPage() {
                       )}
                     </div>
 
-                    {/* Descripción */}
                     <p className="text-sm text-texto-suave mt-3 leading-relaxed line-clamp-2">
                       {a.descripcion}
                     </p>
 
-                    {/* Motivo rechazo */}
                     {a.estado === "rechazada" && a.motivo_rechazo && (
                       <div className="mt-3 p-3 rounded-lg bg-error/10 border border-error/30">
                         <p className="text-xs text-error">
@@ -211,7 +193,6 @@ export default async function MisAnunciosPage() {
                       </div>
                     )}
 
-                    {/* Footer */}
                     <div className="flex items-center gap-4 mt-4 pt-4 border-t border-borde text-xs text-texto-suave">
                       <span className="flex items-center gap-1.5">
                         👁️ {contar(vistas, a.id)} vistas
@@ -221,7 +202,7 @@ export default async function MisAnunciosPage() {
                         {a.estado === "aprobada" && (
                           <Link
                             href="/contactos"
-                            className="text-xs text-rosa hover:text-marca transition"
+                            className="text-xs text-marca hover:text-rosa transition"
                           >
                             Ver en web →
                           </Link>
@@ -233,14 +214,12 @@ export default async function MisAnunciosPage() {
                         />
                       </div>
                     </div>
-
                   </div>
                 </div>
               </div>
             );
           })}
         </div>
-
       </div>
     </main>
   );

@@ -5,6 +5,11 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { contienePalabraProhibida } from "@/lib/palabrasProhibidas";
+import {
+  CIUDADES_PRINCIPALES,
+  CIUDADES_SECUNDARIAS,
+  CIUDADES_INTERNACIONALES,
+} from "@/lib/ciudades";
 
 export default function NuevaConfesionPage() {
   const router = useRouter();
@@ -13,6 +18,7 @@ export default function NuevaConfesionPage() {
   const [titulo, setTitulo] = useState("");
   const [contenido, setContenido] = useState("");
   const [anonima, setAnonima] = useState(true);
+  const [ciudad, setCiudad] = useState("");
   const [error, setError] = useState("");
   const [cargando, setCargando] = useState(false);
 
@@ -20,7 +26,6 @@ export default function NuevaConfesionPage() {
     e.preventDefault();
     setError("");
 
-    // Validaciones
     if (titulo.trim().length < 5) {
       return setError("El título debe tener al menos 5 caracteres");
     }
@@ -29,7 +34,6 @@ export default function NuevaConfesionPage() {
       return setError("El contenido debe tener al menos 20 caracteres");
     }
 
-        // 🚫 Filtro de palabras prohibidas
     const filtroTitulo = contienePalabraProhibida(titulo);
     if (filtroTitulo.contiene) {
       return setError(
@@ -46,7 +50,9 @@ export default function NuevaConfesionPage() {
 
     setCargando(true);
 
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
     if (!user) {
       setCargando(false);
@@ -59,6 +65,7 @@ export default function NuevaConfesionPage() {
       titulo: titulo.trim(),
       contenido: contenido.trim(),
       anonima,
+      ciudad: ciudad || null,
       estado: "pendiente",
     });
 
@@ -75,8 +82,6 @@ export default function NuevaConfesionPage() {
   return (
     <main className="min-h-screen py-12 px-6">
       <div className="max-w-2xl mx-auto">
-
-        {/* Botón volver */}
         <Link
           href="/"
           className="inline-flex items-center gap-2 text-sm text-texto-suave hover:text-marca transition mb-8"
@@ -84,10 +89,7 @@ export default function NuevaConfesionPage() {
           ← Volver al inicio
         </Link>
 
-        {/* Card */}
         <div className="bg-fondo-card border border-borde rounded-2xl p-8 shadow-2xl shadow-marca/10">
-
-          {/* Header */}
           <div className="text-center mb-8">
             <div className="text-5xl mb-4">🤫</div>
             <h1 className="text-3xl font-bold gradient-animated">
@@ -98,16 +100,13 @@ export default function NuevaConfesionPage() {
             </p>
           </div>
 
-          {/* Error */}
           {error && (
             <div className="mb-6 p-3 rounded-lg bg-error/10 border border-error/30 text-error text-sm">
               {error}
             </div>
           )}
 
-          {/* Formulario */}
           <form onSubmit={handleSubmit} className="space-y-6">
-
             {/* Título */}
             <div>
               <label className="block text-sm font-medium text-texto-suave mb-1.5">
@@ -146,6 +145,44 @@ export default function NuevaConfesionPage() {
               </p>
             </div>
 
+            {/* Ciudad (opcional) */}
+            <div>
+              <label className="block text-sm font-medium text-texto-suave mb-1.5">
+                📍 Ciudad (opcional)
+              </label>
+              <select
+                value={ciudad}
+                onChange={(e) => setCiudad(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl bg-fondo border border-borde text-texto focus:border-marca focus:outline-none focus:ring-2 focus:ring-marca/20 transition"
+              >
+                <option value="">Sin especificar</option>
+                <optgroup label="🔥 Principales">
+                  {CIUDADES_PRINCIPALES.map((c) => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
+                  ))}
+                </optgroup>
+                <optgroup label="🟡 Otras ciudades">
+                  {CIUDADES_SECUNDARIAS.map((c) => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
+                  ))}
+                </optgroup>
+                <optgroup label="🌎 Internacional">
+                  {CIUDADES_INTERNACIONALES.map((c) => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
+                  ))}
+                </optgroup>
+              </select>
+              <p className="text-xs text-texto-suave mt-1">
+                Ayuda a otros a encontrar confesiones de su zona
+              </p>
+            </div>
+
             {/* Anónima */}
             <div className="flex items-start gap-3 p-4 rounded-xl bg-fondo border border-borde">
               <button
@@ -176,14 +213,13 @@ export default function NuevaConfesionPage() {
             </div>
 
             {/* Aviso de moderación */}
-            <div className="p-4 rounded-xl bg-neon/5 border border-neon/20">
+            <div className="p-4 rounded-xl bg-marca/5 border border-marca/20">
               <p className="text-xs text-texto-suave leading-relaxed">
-                🔒 <strong className="text-neon">Aviso:</strong> Tu confesión pasará
+                🔒 <strong className="text-marca">Aviso:</strong> Tu confesión pasará
                 por revisión antes de ser publicada. Esto suele tardar unos minutos.
               </p>
             </div>
 
-            {/* Botón */}
             <button
               type="submit"
               disabled={cargando}
@@ -191,16 +227,12 @@ export default function NuevaConfesionPage() {
             >
               {cargando ? "Enviando..." : "Enviar confesión 🚀"}
             </button>
-
           </form>
-
         </div>
 
-        {/* Aviso legal */}
         <p className="text-xs text-center text-texto-suave mt-6">
           Al publicar aceptas nuestras normas de convivencia
         </p>
-
       </div>
     </main>
   );

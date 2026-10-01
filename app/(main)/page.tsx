@@ -10,14 +10,10 @@ export default function Home() {
       <section className="relative flex flex-col items-center justify-center text-center px-6 pt-24 pb-20 overflow-hidden">
 
         {/* Glow de fondo */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-marca/20 rounded-full blur-3xl -z-10" />
-        <div className="absolute top-1/3 left-1/3 w-[300px] h-[300px] bg-rosa/20 rounded-full blur-3xl -z-10" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-125 h-125 bg-marca/20 rounded-full blur-3xl -z-10" />
+        <div className="absolute top-1/3 left-1/3 w-[300px] h-75 bg-rosa/20 rounded-full blur-3xl -z-10" />
 
-        {/* Badge arriba */}
-        <span className="inline-flex items-center gap-2 text-xs font-medium px-4 py-1.5 rounded-full bg-fondo-card border border-borde text-texto-suave mb-8">
-          <span className="w-2 h-2 rounded-full bg-exito animate-pulse" />
-          Nuevas confesiones cada día
-        </span>
+        
 
         {/* Título */}
         <h1 className="text-6xl md:text-8xl font-black tracking-tight leading-none">
@@ -26,11 +22,7 @@ export default function Home() {
 
         
 
-        {/* Subtítulo */}
-        <p className="mt-6 max-w-xl text-sm md:text-base text-texto-suave leading-relaxed">
-          Confiesa lo que no te atreves, encuentra a alguien especial
-          y haz nuevos amigos. Todo en un solo lugar.
-        </p>
+        
 
         {/* Botones */}
         <div className="mt-12 flex flex-col sm:flex-row gap-4">
@@ -72,7 +64,7 @@ export default function Home() {
             <h2 className="text-xl font-bold text-marca">Confesiones</h2>
             <p className="mt-2 text-sm text-texto-suave leading-relaxed">
               Publica lo que piensas de forma anónima o con tu nombre.
-              Comenta y reacciona a lo que otros cuentan.
+              Comenta y reacciona.
             </p>
             <span className="inline-block mt-4 text-xs text-marca group-hover:translate-x-1 transition-transform">
               Explorar →
@@ -91,7 +83,6 @@ export default function Home() {
             <h2 className="text-xl font-bold text-rosa">Contactos</h2>
             <p className="mt-2 text-sm text-texto-suave leading-relaxed">
               Publica tu anuncio para encontrar pareja o amistad.
-              Contacta por WhatsApp con quien te interese.
             </p>
             <span className="inline-block mt-4 text-xs text-rosa group-hover:translate-x-1 transition-transform">
               Explorar →

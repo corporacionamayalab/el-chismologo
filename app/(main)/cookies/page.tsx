@@ -74,10 +74,10 @@ export default function CookiesPage() {
             <p>
               Para dudas sobre cookies:{" "}
               <a
-                href="mailto:hola@chismologo.online"
+                href="mailto:elchismoso.confe@gmail.com"
                 className="text-marca hover:text-rosa underline"
               >
-                hola@chismologo.online
+                elchismoso.confe@gmail.com
               </a>
             </p>
           </section>

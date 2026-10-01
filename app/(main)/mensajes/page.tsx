@@ -63,8 +63,16 @@ export default async function MensajesPage() {
     })
   );
 
-  const validas = conversaciones.filter((c) => c !== null);
-  validas.sort((a, b) => {
+  // 1. Quitar nulos
+  const noNulos = conversaciones.filter((c) => c !== null);
+
+  // 2. Deduplicar por amigo.id (por si la tabla tiene doble fila)
+  const unicas = Array.from(
+    new Map(noNulos.map((c) => [c!.amigo!.id, c])).values()
+  );
+
+  // 3. Ordenar por último mensaje (más reciente primero)
+  unicas.sort((a, b) => {
     const fa = a!.ultimo?.creado_en ?? "0";
     const fb = b!.ultimo?.creado_en ?? "0";
     return new Date(fb).getTime() - new Date(fa).getTime();
@@ -83,7 +91,7 @@ export default async function MensajesPage() {
           </p>
         </div>
 
-        {validas.length === 0 ? (
+        {unicas.length === 0 ? (
           <div className="text-center py-20 bg-fondo-card border border-borde rounded-2xl">
             <div className="text-6xl mb-4">💬</div>
             <h2 className="text-xl font-bold text-texto">
@@ -94,14 +102,14 @@ export default async function MensajesPage() {
             </p>
             <Link
               href="/amigos/buscar"
-              className="inline-block px-6 py-3 rounded-xl bg-gradient-to-r from-neon to-marca text-fondo font-semibold hover:opacity-90 transition"
+              className="inline-block px-6 py-3 rounded-xl bg-gradient-to-r from-marca to-rosa text-white font-semibold hover:opacity-90 transition"
             >
               🔍 Buscar personas
             </Link>
           </div>
         ) : (
           <div className="space-y-2">
-            {validas.map((c) => {
+            {unicas.map((c) => {
               const amigo = c!.amigo!;
               const ultimo = c!.ultimo;
               const noLeidos = c!.noLeidos;

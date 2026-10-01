@@ -30,7 +30,7 @@ export default async function AmigosPage() {
     .or(`solicitante_id.eq.${user.id},receptor_id.eq.${user.id}`)
     .eq("estado", "aceptada");
 
-  const amigos =
+  const amigosRaw =
     amistades
       ?.map((a) => {
         const sol = Array.isArray(a.solicitante)
@@ -42,6 +42,11 @@ export default async function AmigosPage() {
         return a.solicitante_id === user.id ? rec : sol;
       })
       .filter(Boolean) ?? [];
+
+  // 🧹 Deduplicar por id (por si hay doble fila en la tabla)
+  const amigos = Array.from(
+    new Map(amigosRaw.map((a) => [a!.id, a])).values()
+  );
 
   // Ordenar: online primero
   amigos.sort((a, b) => {
@@ -106,7 +111,7 @@ export default async function AmigosPage() {
         {/* Header */}
         <div className="flex items-center justify-between gap-4 flex-wrap">
           <div>
-            <h1 className="text-3xl md:text-4xl font-black bg-gradient-to-r from-neon to-marca bg-clip-text text-transparent">
+            <h1 className="text-3xl md:text-4xl font-black bg-gradient-to-r from-marca to-rosa bg-clip-text text-transparent">
               Amigos
             </h1>
             <p className="text-xs text-texto-suave mt-1">
@@ -116,7 +121,7 @@ export default async function AmigosPage() {
 
           <Link
             href="/amigos/buscar"
-            className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-neon to-marca text-fondo text-sm font-semibold hover:opacity-90 transition-all hover:scale-105 shadow-lg shadow-neon/20"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-marca to-rosa text-white text-sm font-semibold hover:opacity-90 transition-all hover:scale-105 shadow-lg shadow-marca/20"
           >
             🔍 Buscar personas
           </Link>
@@ -294,7 +299,7 @@ export default async function AmigosPage() {
                 return (
                   <div
                     key={s.id}
-                    className="group bg-fondo-card border border-borde rounded-2xl overflow-hidden hover:border-neon/40 hover:-translate-y-0.5 transition-all"
+                    className="group bg-fondo-card border border-borde rounded-2xl overflow-hidden hover:border-rosa/40 hover:-translate-y-0.5 transition-all"
                   >
                     <Link
                       href={`/amigos/${s.id}`}
@@ -308,7 +313,7 @@ export default async function AmigosPage() {
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-neon/30 to-marca/30">
+                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-rosa/30 to-marca/30">
                           <span className="text-5xl font-black text-white">
                             {inicial}
                           </span>
@@ -318,7 +323,7 @@ export default async function AmigosPage() {
 
                     <div className="p-3">
                       <Link href={`/amigos/${s.id}`}>
-                        <p className="text-sm font-semibold text-texto truncate hover:text-neon transition">
+                        <p className="text-sm font-semibold text-texto truncate hover:text-rosa transition">
                           @{s.username}
                         </p>
                       </Link>

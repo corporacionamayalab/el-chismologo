@@ -38,8 +38,41 @@ export default function BotonesPerfil({
     router.refresh();
   };
 
+  // 🔍 Buscar si ya existe una amistad entre ambos
+  const buscarAmistadExistente = async () => {
+    const { data } = await supabase
+      .from("amistades")
+      .select("id, estado, solicitante_id")
+      .or(
+        `and(solicitante_id.eq.${yoId},receptor_id.eq.${usuarioId}),and(solicitante_id.eq.${usuarioId},receptor_id.eq.${yoId})`
+      )
+      .maybeSingle();
+    return data;
+  };
+
   const enviarSolicitud = () =>
     ejecutar(async () => {
+      // 🔍 Comprobar si YA existe una amistad entre ambos
+      const existente = await buscarAmistadExistente();
+
+      if (existente) {
+        if (existente.estado === "pendiente") {
+          // Si YO envié la solicitud → ya está enviada
+          if (existente.solicitante_id === yoId) return;
+
+          // Si la OTRA persona me la envió → aceptarla automáticamente
+          const { error } = await supabase
+            .from("amistades")
+            .update({ estado: "aceptada" })
+            .eq("id", existente.id);
+          if (error) alert("Error: " + error.message);
+          return;
+        }
+        // Ya aceptada o rechazada → no hacer nada
+        return;
+      }
+
+      // ✅ No existe → crear la solicitud
       const { error } = await supabase.from("amistades").insert({
         solicitante_id: yoId,
         receptor_id: usuarioId,
@@ -140,7 +173,7 @@ export default function BotonesPerfil({
       <button
         onClick={desbloquear}
         disabled={cargando}
-        className="w-full py-3 rounded-xl border border-neon/40 text-neon hover:bg-neon/10 font-semibold transition disabled:opacity-50"
+        className="w-full py-3 rounded-xl border border-marca/40 text-marca hover:bg-marca/10 font-semibold transition disabled:opacity-50"
       >
         🚫 Desbloquear usuario
       </button>
@@ -157,7 +190,7 @@ export default function BotonesPerfil({
         <button
           onClick={enviarSolicitud}
           disabled={cargando}
-          className="w-full py-3 rounded-xl bg-gradient-to-r from-neon to-marca text-fondo font-semibold hover:opacity-90 transition disabled:opacity-50"
+          className="w-full py-3 rounded-xl bg-gradient-to-r from-marca to-rosa text-white font-semibold hover:opacity-90 transition disabled:opacity-50"
         >
           {cargando ? "..." : "+ Agregar amigo"}
         </button>
@@ -165,13 +198,13 @@ export default function BotonesPerfil({
 
       {estado === "pendiente" && relacion?.soySolicitante && (
         <div className="flex gap-2">
-          <div className="flex-1 py-3 rounded-xl bg-neon/10 border border-neon/30 text-neon font-semibold text-center text-sm">
+          <div className="flex-1 py-3 rounded-xl bg-marca/10 border border-marca/30 text-marca font-semibold text-center text-sm">
             ⏳ Solicitud enviada
           </div>
           <button
             onClick={cancelar}
             disabled={cargando}
-            className="px-4 py-3 rounded-xl border border-borde text-texto-suave hover:text-error hover:border-error/30 text-sm transition disabled:opacity-50"
+            className="px-4 py-3 rounded-xl border border-borde text-texto-suave hover:text-rosa hover:border-rosa/30 text-sm transition disabled:opacity-50"
           >
             Cancelar
           </button>
@@ -197,7 +230,7 @@ export default function BotonesPerfil({
         </div>
       )}
 
-      {/* 🆕 Botón de mensaje cuando son amigos */}
+      {/* Botón de mensaje cuando son amigos */}
       {estado === "aceptada" && (
         <div className="space-y-2">
           <Link

@@ -92,10 +92,10 @@ export default function PrivacidadPage() {
             <p>
               Para ejercer tus derechos o dudas:{" "}
               <a
-                href="mailto:privacidad@chismologo.online"
+                href="mailto:elchismoso.confe@gmail.com"
                 className="text-marca hover:text-rosa underline"
               >
-                privacidad@chismologo.online
+                elchismoso.confe@gmail.com
               </a>
             </p>
           </section>

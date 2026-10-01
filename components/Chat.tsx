@@ -29,16 +29,11 @@ type Amigo = {
 };
 
 const EMOJIS_HOT = [
-  // Caritas top
   "😂", "😍", "🥰", "😎", "🤔", "😅", "😢", "😡", "😏", "😈", "🤭", "😴",
   "😘", "😜", "🤤", "😳", "🥵", "🥶", "🤯", "😱", "🤗", "🙃", "😋", "😝",
-  // Corazones y fuego
   "❤️", "💕", "💖", "💘", "💔", "💋", "💯", "🔥", "✨", "⭐", "💫", "🌟",
-  // Gestos
   "👍", "👎", "👏", "🙏", "💪", "🤝", "✌️", "👀", "💅", "🤙", "🤌", "💃",
-  // Hot
   "🍑", "🍆", "👅", "💦", "🌶️", "😈", "💋", "🫦", "🥵", "🤭",
-  // Diversión
   "🎉", "🎊", "🎁", "🌹", "🍕", "🍔", "🍟", "☕", "🍺", "🍷", "🍿", "🎬",
 ];
 
@@ -78,7 +73,6 @@ export default function Chat({
     scrollAbajo();
   }, [mensajes]);
 
-  // Cerrar emojis al hacer clic fuera
   useEffect(() => {
     const handleClickFuera = (e: MouseEvent) => {
       if (emojiRef.current && !emojiRef.current.contains(e.target as Node)) {
@@ -89,7 +83,6 @@ export default function Chat({
     return () => document.removeEventListener("mousedown", handleClickFuera);
   }, []);
 
-  // Bloquear clic derecho en el chat
   useEffect(() => {
     const bloquear = (e: MouseEvent) => e.preventDefault();
     const chat = scrollRef.current;
@@ -99,7 +92,6 @@ export default function Chat({
     }
   }, []);
 
-  // Suscripción a mensajes nuevos
   useEffect(() => {
     const canal = supabase
       .channel(`chat-${yoId}-${amigo.id}`)
@@ -139,7 +131,6 @@ export default function Chat({
     };
   }, [yoId, amigo.id]);
 
-  // Actualizar estado del amigo
   useEffect(() => {
     const intervalo = setInterval(async () => {
       const { data } = await supabase
@@ -182,7 +173,6 @@ export default function Chat({
     inputRef.current?.focus();
   };
 
-  // Al seleccionar archivo → abrir preview (NO enviar directo)
   const handleSeleccionArchivo = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -210,7 +200,6 @@ export default function Chat({
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  // Enviar archivo desde el preview
   const enviarArchivo = async (efimero: boolean) => {
     if (!archivoPreview) return;
 
@@ -318,8 +307,8 @@ export default function Chat({
           </Link>
         </div>
 
-        {/* Aviso seguridad */}
-        <div className="bg-neon/5 border-b border-neon/20 px-4 py-2 text-xs text-texto-suave text-center">
+        {/* Aviso seguridad — CELESTE suave */}
+        <div className="bg-marca/5 border-b border-marca/20 px-4 py-2 text-xs text-texto-suave text-center">
           ⚠️ Nunca compartas datos personales, dinero o fotos íntimas
         </div>
 
@@ -357,7 +346,6 @@ export default function Chat({
                   </div>
                 )}
 
-                {/* Efímero visto (solo receptor) */}
                 {esEfimeroVisto && (
                   <div className={`flex ${esMio ? "justify-end" : "justify-start"}`}>
                     <div className="max-w-[75%] px-4 py-3 rounded-2xl bg-fondo border border-borde text-texto-suave text-xs italic flex items-center gap-2">
@@ -367,7 +355,6 @@ export default function Chat({
                   </div>
                 )}
 
-                {/* Mensaje visible */}
                 {!esEfimeroVisto && (
                   <div className={`flex ${esMio ? "justify-end" : "justify-start"}`}>
                     <div
@@ -380,7 +367,6 @@ export default function Chat({
                         }
                       `}
                     >
-                      {/* Media */}
                       {esMedia && m.media_url && (
                         <button
                           onClick={() => {
@@ -420,14 +406,12 @@ export default function Chat({
                         </button>
                       )}
 
-                      {/* Texto */}
                       {m.contenido && (
                         <p className="px-4 py-2 text-sm whitespace-pre-wrap">
                           {m.contenido}
                         </p>
                       )}
 
-                      {/* Hora */}
                       <p
                         className={`
                           text-[10px] px-4 pb-2 text-right
@@ -457,7 +441,7 @@ export default function Chat({
               </p>
               <button
                 onClick={() => setMostrarEmojis(false)}
-                className="text-xs text-texto-suave hover:text-error"
+                className="text-xs text-texto-suave hover:text-rosa"
               >
                 ✕
               </button>
@@ -491,7 +475,6 @@ export default function Chat({
           )}
 
           <div className="flex gap-2 items-center">
-            {/* Emojis */}
             <button
               type="button"
               onClick={() => setMostrarEmojis(!mostrarEmojis)}
@@ -508,7 +491,6 @@ export default function Chat({
               😀
             </button>
 
-            {/* Adjuntar */}
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
@@ -551,7 +533,6 @@ export default function Chat({
 
       </div>
 
-      {/* Preview antes de enviar */}
       {archivoPreview && (
         <PreviewMedia
           archivo={archivoPreview}
@@ -560,7 +541,6 @@ export default function Chat({
         />
       )}
 
-      {/* Visor de media */}
       {mediaAbierta && (
         <VisorMedia
           mensaje={mediaAbierta}

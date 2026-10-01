@@ -122,8 +122,8 @@ export default function Header() {
 
   return (
     <>
-      {/* Línea superior con degradado */}
-      <div className="fixed top-0 left-0 right-0 h-[2px] z-[60] bg-gradient-to-r from-marca via-rosa to-neon" />
+      {/* Línea superior con degradado — CELESTE → ROSA */}
+      <div className="fixed top-0 left-0 right-0 h-0.5 z-60 bg-linear-to-r from-marca to-rosa" />
 
       <header
         className={`
@@ -178,7 +178,7 @@ export default function Header() {
                 {/* Botón confesar */}
                 <Link
                   href="/confesiones/nueva"
-                  className="text-sm font-semibold px-4 py-2 rounded-xl bg-gradient-to-r from-marca to-rosa text-white hover:from-marca-hover hover:to-rosa-hover transition-all hover:scale-105 shadow-lg shadow-marca/20"
+                  className="text-sm font-semibold px-4 py-2 rounded-xl bg-linear-to-r from-marca to-rosa text-white hover:from-marca-hover hover:to-rosa-hover transition-all hover:scale-105 shadow-lg shadow-marca/20"
                 >
                   + Confesar
                 </Link>
@@ -192,7 +192,7 @@ export default function Header() {
                     onClick={() => setMenuUsuario(!menuUsuario)}
                     className="flex items-center gap-2 pl-1 pr-3 py-1 rounded-xl hover:bg-fondo-card transition-all border border-transparent hover:border-borde"
                   >
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-marca to-rosa flex items-center justify-center text-white font-bold text-sm">
+                    <div className="w-8 h-8 rounded-full bg-linear-to-br from-marca to-rosa flex items-center justify-center text-white font-bold text-sm">
                       {inicial}
                     </div>
                     <span className="text-sm font-medium text-texto max-w-[100px] truncate">
@@ -306,21 +306,21 @@ export default function Header() {
               className={`
                 block w-6 h-0.5 rounded-full bg-gradient-to-r from-marca to-rosa
                 transition-all duration-300
-                ${menuAbierto ? "rotate-45 translate-y-[5px]" : ""}
+                ${menuAbierto ? "rotate-45 translate-y-1.25" : ""}
               `}
             />
             <span
               className={`
-                block w-6 h-0.5 rounded-full bg-gradient-to-r from-rosa to-neon
+                block w-6 h-0.5 rounded-full bg-gradient-to-r from-rosa to-marca
                 my-1.5 transition-all duration-300
                 ${menuAbierto ? "opacity-0 scale-0" : ""}
               `}
             />
             <span
               className={`
-                block w-6 h-0.5 rounded-full bg-gradient-to-r from-neon to-marca
+                block w-6 h-0.5 rounded-full bg-gradient-to-r from-marca to-rosa
                 transition-all duration-300
-                ${menuAbierto ? "-rotate-45 -translate-y-[5px]" : ""}
+                ${menuAbierto ? "-rotate-45 -translate-y-1.25" : ""}
               `}
             />
           </button>

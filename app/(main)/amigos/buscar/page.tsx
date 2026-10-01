@@ -3,12 +3,18 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import {
+  CIUDADES_PRINCIPALES,
+  CIUDADES_SECUNDARIAS,
+  CIUDADES_INTERNACIONALES,
+} from "@/lib/ciudades";
 import type { User } from "@supabase/supabase-js";
 
 type Perfil = {
   id: string;
   username: string;
   avatar_url: string | null;
+  ciudad: string | null;
 };
 
 type Relacion = {
@@ -23,6 +29,7 @@ export default function BuscarAmigosPage() {
 
   const [user, setUser] = useState<User | null>(null);
   const [busqueda, setBusqueda] = useState("");
+  const [filtroCiudad, setFiltroCiudad] = useState("");
   const [resultados, setResultados] = useState<Perfil[]>([]);
   const [relaciones, setRelaciones] = useState<Relacion[]>([]);
   const [cargando, setCargando] = useState(false);
@@ -48,29 +55,37 @@ export default function BuscarAmigosPage() {
     init();
   }, []);
 
-  // Buscar con debounce
   useEffect(() => {
     const timer = setTimeout(async () => {
-      if (busqueda.trim().length < 2) {
+      if (busqueda.trim().length < 2 && !filtroCiudad) {
         setResultados([]);
         return;
       }
 
       setCargando(true);
 
-      const { data } = await supabase
+      let query = supabase
         .from("profiles")
-        .select("id, username, avatar_url")
-        .ilike("username", `%${busqueda.trim()}%`)
+        .select("id, username, avatar_url, ciudad")
         .neq("id", user?.id ?? "")
-        .limit(20);
+        .limit(30);
+
+      if (busqueda.trim().length >= 2) {
+        query = query.ilike("username", `%${busqueda.trim()}%`);
+      }
+
+      if (filtroCiudad) {
+        query = query.eq("ciudad", filtroCiudad);
+      }
+
+      const { data } = await query;
 
       setResultados((data ?? []) as Perfil[]);
       setCargando(false);
     }, 400);
 
     return () => clearTimeout(timer);
-  }, [busqueda, user]);
+  }, [busqueda, filtroCiudad, user]);
 
   const obtenerRelacion = (otroId: string) =>
     relaciones.find(
@@ -83,6 +98,27 @@ export default function BuscarAmigosPage() {
     if (!user) return;
 
     setEnviando(receptorId);
+
+    // 🔍 Verificar si ya existe
+    const { data: existente } = await supabase
+      .from("amistades")
+      .select("id, estado, solicitante_id")
+      .or(
+        `and(solicitante_id.eq.${user.id},receptor_id.eq.${receptorId}),and(solicitante_id.eq.${receptorId},receptor_id.eq.${user.id})`
+      )
+      .maybeSingle();
+
+    if (existente) {
+      if (existente.estado === "pendiente" && existente.solicitante_id !== user.id) {
+        // Aceptar automáticamente
+        await supabase
+          .from("amistades")
+          .update({ estado: "aceptada" })
+          .eq("id", existente.id);
+      }
+      setEnviando(null);
+      return;
+    }
 
     const { data, error } = await supabase
       .from("amistades")
@@ -106,16 +142,15 @@ export default function BuscarAmigosPage() {
   return (
     <main className="min-h-screen py-10 px-6">
       <div className="max-w-2xl mx-auto">
-
         <Link
           href="/amigos"
-          className="inline-flex items-center gap-2 text-sm text-texto-suave hover:text-neon transition mb-8"
+          className="inline-flex items-center gap-2 text-sm text-texto-suave hover:text-marca transition mb-8"
         >
           ← Volver a amigos
         </Link>
 
         <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-black bg-gradient-to-r from-neon to-marca bg-clip-text text-transparent">
+          <h1 className="text-3xl md:text-4xl font-black gradient-animated">
             Buscar personas
           </h1>
           <p className="text-sm text-texto-suave mt-2">
@@ -124,7 +159,7 @@ export default function BuscarAmigosPage() {
         </div>
 
         {/* Buscador */}
-        <div className="relative mb-6">
+        <div className="relative mb-4">
           <span className="absolute left-4 top-1/2 -translate-y-1/2 text-texto-suave">
             🔍
           </span>
@@ -134,8 +169,40 @@ export default function BuscarAmigosPage() {
             onChange={(e) => setBusqueda(e.target.value)}
             placeholder="Busca por nombre de usuario..."
             autoFocus
-            className="w-full pl-12 pr-4 py-4 rounded-2xl bg-fondo-card border border-borde text-texto placeholder-texto-suave/50 focus:border-neon focus:outline-none focus:ring-2 focus:ring-neon/20 transition"
+            className="w-full pl-12 pr-4 py-4 rounded-2xl bg-fondo-card border border-borde text-texto placeholder-texto-suave/50 focus:border-marca focus:outline-none focus:ring-2 focus:ring-marca/20 transition"
           />
+        </div>
+
+        {/* Filtro por ciudad */}
+        <div className="mb-6">
+          <select
+            value={filtroCiudad}
+            onChange={(e) => setFiltroCiudad(e.target.value)}
+            className="w-full px-4 py-3 rounded-2xl bg-fondo-card border border-borde text-texto focus:border-marca focus:outline-none focus:ring-2 focus:ring-marca/20 transition"
+          >
+            <option value="">🌍 Todas las ciudades</option>
+            <optgroup label="🔥 Principales">
+              {CIUDADES_PRINCIPALES.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+            </optgroup>
+            <optgroup label="🟡 Otras ciudades">
+              {CIUDADES_SECUNDARIAS.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+            </optgroup>
+            <optgroup label="🌎 Internacional">
+              {CIUDADES_INTERNACIONALES.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+            </optgroup>
+          </select>
         </div>
 
         {/* Resultados */}
@@ -145,20 +212,22 @@ export default function BuscarAmigosPage() {
           </p>
         )}
 
-        {!cargando && busqueda.length >= 2 && resultados.length === 0 && (
-          <div className="text-center py-16 bg-fondo-card border border-borde rounded-2xl">
-            <div className="text-5xl mb-3">🔍</div>
-            <p className="text-sm text-texto-suave">
-              No se encontraron usuarios con &quot;{busqueda}&quot;
-            </p>
-          </div>
-        )}
+        {!cargando &&
+          (busqueda.length >= 2 || filtroCiudad) &&
+          resultados.length === 0 && (
+            <div className="text-center py-16 bg-fondo-card border border-borde rounded-2xl">
+              <div className="text-5xl mb-3">🔍</div>
+              <p className="text-sm text-texto-suave">
+                No se encontraron usuarios
+              </p>
+            </div>
+          )}
 
-        {busqueda.length < 2 && (
+        {busqueda.length < 2 && !filtroCiudad && (
           <div className="text-center py-16 bg-fondo-card border border-borde rounded-2xl">
             <div className="text-5xl mb-3">👥</div>
             <p className="text-sm text-texto-suave">
-              Escribe al menos 2 letras para buscar
+              Escribe al menos 2 letras o selecciona una ciudad
             </p>
           </div>
         )}
@@ -172,7 +241,7 @@ export default function BuscarAmigosPage() {
             return (
               <div
                 key={p.id}
-                className="bg-fondo-card border border-borde rounded-2xl p-4 flex items-center gap-3 hover:border-neon/30 transition"
+                className="bg-fondo-card border border-borde rounded-2xl p-4 flex items-center gap-3 hover:border-marca/30 transition"
               >
                 {p.avatar_url ? (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -182,7 +251,7 @@ export default function BuscarAmigosPage() {
                     className="w-12 h-12 rounded-full object-cover flex-shrink-0"
                   />
                 ) : (
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-neon to-marca flex items-center justify-center text-fondo font-black flex-shrink-0">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-marca to-rosa flex items-center justify-center text-white font-black flex-shrink-0">
                     {inicial}
                   </div>
                 )}
@@ -191,21 +260,25 @@ export default function BuscarAmigosPage() {
                   <p className="font-semibold text-texto truncate">
                     @{p.username}
                   </p>
+                  {p.ciudad && (
+                    <p className="text-xs text-texto-suave truncate">
+                      📍 {p.ciudad}
+                    </p>
+                  )}
                 </div>
 
-                {/* Botón según estado */}
                 {!estado && (
                   <button
                     onClick={() => enviarSolicitud(p.id)}
                     disabled={enviando === p.id}
-                    className="px-4 py-2 rounded-xl bg-gradient-to-r from-neon to-marca text-fondo text-sm font-semibold hover:opacity-90 transition disabled:opacity-50 whitespace-nowrap"
+                    className="px-4 py-2 rounded-xl bg-gradient-to-r from-marca to-rosa text-white text-sm font-semibold hover:opacity-90 transition disabled:opacity-50 whitespace-nowrap"
                   >
                     {enviando === p.id ? "..." : "+ Agregar"}
                   </button>
                 )}
 
                 {estado === "pendiente" && relacion && (
-                  <span className="text-xs px-3 py-1.5 rounded-xl bg-neon/10 border border-neon/30 text-neon whitespace-nowrap">
+                  <span className="text-xs px-3 py-1.5 rounded-xl bg-marca/10 border border-marca/30 text-marca whitespace-nowrap">
                     {relacion.solicitante_id === user?.id
                       ? "⏳ Enviada"
                       : "🔔 Te envió"}
@@ -227,7 +300,6 @@ export default function BuscarAmigosPage() {
             );
           })}
         </div>
-
       </div>
     </main>
   );

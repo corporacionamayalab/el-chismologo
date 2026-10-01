@@ -90,13 +90,13 @@ export default function TerminosPage() {
             <h2 className="text-xl font-bold text-texto mb-3">8. Contacto</h2>
             <p>
               Para dudas sobre estos términos, escríbenos a{" "}
-              <a
-                href="mailto:hola@chismologo.online"
-                className="text-marca hover:text-rosa underline"
-              >
-                hola@chismologo.online
-              </a>
-            </p>
+                <a
+                  href="mailto:elchismoso.confe@gmail.com"
+                  className="text-marca hover:text-rosa underline"
+                >
+                  elchismoso.confe@gmail.com
+                </a>
+              </p>
           </section>
 
         </div>
