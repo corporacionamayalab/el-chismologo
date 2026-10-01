@@ -7,10 +7,25 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: "*",
-        allow: "/",
+        allow: [
+          "/",
+          "/confesiones",
+          "/confesiones/*",
+          "/contactos",
+          "/contactos/*",
+          "/amigos",
+          "/login",
+          "/register",
+          "/terminos",
+          "/privacidad",
+          "/cookies",
+          "/descargo",
+        ],
         disallow: [
+          // Admin
           "/ymix34",
           "/ymix34/*",
+          // Zona privada
           "/perfil",
           "/mis-confesiones",
           "/mis-anuncios",
@@ -18,10 +33,24 @@ export default function robots(): MetadataRoute.Robots {
           "/mensajes",
           "/mensajes/*",
           "/amigos/solicitudes",
+          // Auth
+          "/nueva-password",
+          "/recuperar",
+          "/auth/*",
+          // API
           "/api/*",
+          // Búsquedas (evita contenido duplicado)
+          "/*?q=",
+          "/*?search=",
         ],
+      },
+      // Bloqueo explícito a bots basura
+      {
+        userAgent: ["AhrefsBot", "SemrushBot", "MJ12bot", "DotBot"],
+        disallow: "/",
       },
     ],
     sitemap: `${baseUrl}/sitemap.xml`,
+    host: baseUrl,
   };
 }

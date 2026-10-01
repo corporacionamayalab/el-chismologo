@@ -2,71 +2,124 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import PWAInstaller from "@/components/PWAInstaller";
 
+const BASE_URL = "https://www.chismologo.online";
+
 export const metadata: Metadata = {
+  // ============ TITLE & DESCRIPTION ============
   title: {
-  default: "Chismólogo",
-  template: "%s | Chismólogo",
-},
+    default: "El Chismólogo — Confesiones anónimas y contactos en Perú",
+    template: "%s | El Chismólogo",
+  },
   description:
-    "La red social donde puedes confesar tus secretos de forma anónima, encontrar pareja o amigos, y chatear en tiempo real. Todo en un lugar seguro y moderado.",
+    "Publica confesiones anónimas, encuentra amigos o pareja y chatea en tiempo real en Perú. Comunidad segura, moderada y gratis. Aquí todo se sabe 👀",
+
+  // ============ KEYWORDS (SEO) ============
   keywords: [
-    "chismes",
-    "confesiones",
+    // Principales
     "confesiones anónimas",
-    "contactos",
-    "buscar pareja",
-    "amigos",
-    "chatear",
-    "red social",
+    "confesiones anónimas perú",
+    "confesar secretos online",
+    "chismes anónimos",
     "chismologo",
-    "perú",
-    "trujillo",
+    "el chismólogo",
+    // Contactos / Social
+    "buscar pareja perú",
+    "buscar amigos perú",
+    "conocer gente perú",
+    "anuncios para conocer gente",
+    "contactos perú",
+    "red social perú",
+    // Chat
+    "chatear online",
+    "chat anónimo",
+    "mensajes en tiempo real",
+    // Ciudades
+    "confesiones lima",
+    "confesiones trujillo",
+    "confesiones arequipa",
+    "confesiones cusco",
+    "confesiones piura",
+    "confesiones chiclayo",
+    "confesiones perú",
+    // Long-tail
+    "donde confesar secretos anónimos",
+    "publicar confesiones sin registro",
+    "app para confesar secretos",
+    "hacer amigos en perú online",
+    "encontrar pareja en perú gratis",
   ],
-  authors: [{ name: "Chismólogo" }],
-  creator: "Chismólogo",
-  metadataBase: new URL("https://www.chismologo.online"),
+
+  // ============ AUTORÍA ============
+  authors: [{ name: "El Chismólogo", url: BASE_URL }],
+  creator: "El Chismólogo",
+  publisher: "El Chismólogo",
+  category: "Social",
+
+  // ============ BASE URL ============
+  metadataBase: new URL(BASE_URL),
   alternates: {
-    canonical: "https://www.chismologo.online",
+    canonical: BASE_URL,
+    languages: {
+      "es-PE": BASE_URL,
+      "es": BASE_URL,
+    },
   },
 
-  // 👈 PWA
-  applicationName: "Chismólogo",
+  // ============ VERIFICACIÓN (Search Console) ============
+  // Reemplaza los valores cuando los tengas
+  verification: {
+    // google: "TU_CODIGO_DE_GOOGLE_AQUI",
+    // bing: "TU_CODIGO_DE_BING_AQUI",
+    // yandex: "TU_CODIGO_DE_YANDEX_AQUI",
+  },
+
+  // ============ PWA ============
+  applicationName: "El Chismólogo",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
-    title: "Chismólogo",
+    title: "El Chismólogo",
     statusBarStyle: "black-translucent",
   },
   formatDetection: {
     telephone: false,
+    email: false,
+    address: false,
   },
 
+  // ============ OPEN GRAPH (WhatsApp, Facebook, LinkedIn) ============
   openGraph: {
     type: "website",
     locale: "es_PE",
-    url: "https://www.chismologo.online",
-    siteName: "Chismólogo",
-    title: "Chismólogo — Confesiones anónimas y contactos en Perú",
+    alternateLocale: ["es_AR", "es_MX", "es_CO", "es_CL"],
+    url: BASE_URL,
+    siteName: "El Chismólogo",
+    title: "El Chismólogo — Confesiones anónimas y contactos en Perú",
     description:
-      "Confiesa tus secretos, encuentra pareja o amigos, y chatea en tiempo real. Todo en un lugar seguro.",
+      "Confiesa tus secretos, encuentra pareja o amigos y chatea en tiempo real. Comunidad segura y moderada. 👀",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Chismólogo — Aquí todo se sabe",
+        alt: "El Chismólogo — Aquí todo se sabe 👀",
+        type: "image/png",
       },
     ],
   },
+
+  // ============ TWITTER CARDS ============
   twitter: {
     card: "summary_large_image",
-    title: "Chismólogo — Confesiones anónimas y contactos",
+    site: "@chismologo",
+    creator: "@chismologo",
+    title: "El Chismólogo — Confesiones anónimas y contactos",
     description:
-      "Confiesa tus secretos, encuentra pareja o amigos, y chatea en tiempo real.",
+      "Confiesa tus secretos, encuentra pareja o amigos y chatea en tiempo real. 👀",
     images: ["/og-image.png"],
   },
 
-  // 👈 PWA: íconos completos (svg + PNG 192/512)
+  // ============ ICONS ============
   icons: {
     icon: [
       { url: "/icon.svg", type: "image/svg+xml" },
@@ -78,12 +131,15 @@ export const metadata: Metadata = {
     ],
   },
 
+  // ============ ROBOTS ============
   robots: {
     index: true,
     follow: true,
+    nocache: false,
     googleBot: {
       index: true,
       follow: true,
+      noimageindex: false,
       "max-video-preview": -1,
       "max-image-preview": "large",
       "max-snippet": -1,
@@ -91,14 +147,53 @@ export const metadata: Metadata = {
   },
 };
 
-// 👈 PWA: viewport (requerido en Next.js 14+)
+// ============ VIEWPORT (PWA) ============
 export const viewport: Viewport = {
-  themeColor: "#8B5CF6",
+  themeColor: "#38BDF8", // ✅ CAMBIADO a celeste
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
   viewportFit: "cover",
   colorScheme: "light dark",
+};
+
+// ============ JSON-LD (Schema.org) ============
+// Esto hace que Google muestre tu sitio con información enriquecida
+const jsonLdWebSite = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "El Chismólogo",
+  alternateName: "Chismólogo Online",
+  url: BASE_URL,
+  description:
+    "Confesiones anónimas, contactos y chat en tiempo real en Perú.",
+  inLanguage: "es-PE",
+  potentialAction: {
+    "@type": "SearchAction",
+    target: {
+      "@type": "EntryPoint",
+      urlTemplate: `${BASE_URL}/confesiones?q={search_term_string}`,
+    },
+    "query-input": "required name=search_term_string",
+  },
+};
+
+const jsonLdOrganization = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "El Chismólogo",
+  url: BASE_URL,
+  logo: {
+    "@type": "ImageObject",
+    url: `${BASE_URL}/icons/icon-512.png`,
+    width: 512,
+    height: 512,
+  },
+  sameAs: [
+    // Añade aquí tus redes sociales cuando las tengas:
+    // "https://www.instagram.com/chismologo",
+    // "https://www.tiktok.com/@chismologo",
+  ],
 };
 
 export default function RootLayout({
@@ -127,21 +222,40 @@ export default function RootLayout({
           }}
         />
 
-        {/* 👈 PWA: fallbacks navegadores viejos */}
+        {/* JSON-LD Schema.org para Google */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdWebSite) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(jsonLdOrganization),
+          }}
+        />
+
+        {/* PWA fallbacks */}
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#8B5CF6" />
+        <meta name="theme-color" content="#38BDF8" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta
           name="apple-mobile-web-app-status-bar-style"
           content="black-translucent"
         />
-        <meta name="apple-mobile-web-app-title" content="Chismólogo" />
+        <meta name="apple-mobile-web-app-title" content="El Chismólogo" />
         <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+
+        {/* Geo tags (Perú) */}
+        <meta name="geo.region" content="PE" />
+        <meta name="geo.placename" content="Perú" />
+
+        {/* Language */}
+        <meta httpEquiv="content-language" content="es-PE" />
       </head>
       <body className="bg-fondo text-texto antialiased min-h-screen flex flex-col">
         {children}
-        <PWAInstaller /> {/* 👈 PWA */}
+        <PWAInstaller />
       </body>
     </html>
   );

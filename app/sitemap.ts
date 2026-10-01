@@ -7,7 +7,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://www.chismologo.online";
   const supabase = await createClient();
 
-  // Páginas estáticas
+  // ============ PÁGINAS ESTÁTICAS ============
   const estaticas: MetadataRoute.Sitemap = [
     {
       url: baseUrl,
@@ -19,13 +19,31 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       url: `${baseUrl}/confesiones`,
       lastModified: new Date(),
       changeFrequency: "hourly",
-      priority: 0.9,
+      priority: 0.95,
     },
     {
       url: `${baseUrl}/contactos`,
       lastModified: new Date(),
       changeFrequency: "hourly",
-      priority: 0.9,
+      priority: 0.95,
+    },
+    {
+      url: `${baseUrl}/confesiones/nueva`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/contactos/nuevo`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/amigos/buscar`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.6,
     },
     {
       url: `${baseUrl}/login`,
@@ -51,24 +69,53 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "yearly",
       priority: 0.3,
     },
+    {
+      url: `${baseUrl}/cookies`,
+      lastModified: new Date(),
+      changeFrequency: "yearly",
+      priority: 0.3,
+    },
+    {
+      url: `${baseUrl}/descargo`,
+      lastModified: new Date(),
+      changeFrequency: "yearly",
+      priority: 0.3,
+    },
   ];
 
-  // Confesiones públicas (aprobadas)
+  // ============ CONFESIONES APROBADAS ============
   const { data: confesiones } = await supabase
     .from("confesiones")
     .select("id, actualizado_en")
     .eq("estado", "aprobada")
     .order("creado_en", { ascending: false })
-    .limit(500);
+    .limit(1000);
 
   const urlsConfesiones: MetadataRoute.Sitemap = (confesiones ?? []).map(
     (c) => ({
       url: `${baseUrl}/confesiones/${c.id}`,
       lastModified: new Date(c.actualizado_en),
       changeFrequency: "weekly" as const,
+      priority: 0.75,
+    })
+  );
+
+  // ============ CONTACTOS APROBADOS ============
+  const { data: contactos } = await supabase
+    .from("contactos")
+    .select("id, creado_en")
+    .eq("estado", "aprobada")
+    .order("creado_en", { ascending: false })
+    .limit(1000);
+
+  const urlsContactos: MetadataRoute.Sitemap = (contactos ?? []).map(
+    (c) => ({
+      url: `${baseUrl}/contactos/${c.id}`,
+      lastModified: new Date(c.creado_en),
+      changeFrequency: "weekly" as const,
       priority: 0.7,
     })
   );
 
-  return [...estaticas, ...urlsConfesiones];
+  return [...estaticas, ...urlsConfesiones, ...urlsContactos];
 }
