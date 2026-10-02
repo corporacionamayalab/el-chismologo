@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
 import { useState, useEffect } from "react";
@@ -15,7 +16,7 @@ const REACCIONES: {
   color: string;
 }[] = [
   { tipo: "me_gusta", emoji: "❤️", label: "Me gusta", color: "text-rosa" },
-  { tipo: "risa", emoji: "😂", label: "Risa", color: "text-neon" },
+  { tipo: "risa", emoji: "😂", label: "Risa", color: "text-marca" },
   { tipo: "triste", emoji: "😢", label: "Triste", color: "text-marca" },
   { tipo: "sorpresa", emoji: "😮", label: "Sorpresa", color: "text-exito" },
 ];
@@ -25,6 +26,8 @@ export default function Reacciones({ confesionId }: { confesionId: string }) {
   const supabase = createClient();
 
   const [user, setUser] = useState<User | null>(null);
+  const [cargandoSesion, setCargandoSesion] = useState(true);
+  const [puedeInteractuar, setPuedeInteractuar] = useState(false);
   const [reacciones, setReacciones] = useState<
     { tipo: TipoReaccion; user_id: string }[]
   >([]);
@@ -32,10 +35,39 @@ export default function Reacciones({ confesionId }: { confesionId: string }) {
   const [cargando, setCargando] = useState(true);
   const [animando, setAnimando] = useState<TipoReaccion | null>(null);
 
-  // Cargar usuario
+  // Sesión + verificación
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => setUser(data.user ?? null));
-  }, []);
+    const verificar = async (u: User) => {
+      const { data: perfil } = await supabase
+        .from("profiles")
+        .select("verificado, exento_verificacion")
+        .eq("id", u.id)
+        .single();
+
+      setPuedeInteractuar(
+        (perfil?.verificado ?? false) || (perfil?.exento_verificacion ?? false)
+      );
+    };
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      const u = session?.user ?? null;
+      setUser(u);
+      setCargandoSesion(false);
+      if (u) verificar(u);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      const u = session?.user ?? null;
+      setUser(u);
+      setCargandoSesion(false);
+      if (u) await verificar(u);
+      else setPuedeInteractuar(false);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [supabase]);
 
   // Cargar reacciones
   const cargarReacciones = async () => {
@@ -46,39 +78,20 @@ export default function Reacciones({ confesionId }: { confesionId: string }) {
 
     if (data) {
       setReacciones(data as { tipo: TipoReaccion; user_id: string }[]);
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
       if (user) {
         const mi = data.find((r) => r.user_id === user.id);
         setMiReaccion((mi?.tipo as TipoReaccion) ?? null);
+      } else {
+        setMiReaccion(null);
       }
     }
     setCargando(false);
   };
 
   useEffect(() => {
-    const cargar = async () => {
-      const { data } = await supabase
-        .from("reacciones")
-        .select("tipo, user_id")
-        .eq("confesion_id", confesionId);
-
-      if (data) {
-        setReacciones(data as { tipo: TipoReaccion; user_id: string }[]);
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-        if (user) {
-          const mi = data.find((r) => r.user_id === user.id);
-          setMiReaccion((mi?.tipo as TipoReaccion) ?? null);
-        }
-      }
-      setCargando(false);
-    };
-
-    void cargar();
-  }, [confesionId]);
+    void cargarReacciones();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [confesionId, user]);
 
   const contar = (tipo: TipoReaccion) =>
     reacciones.filter((r) => r.tipo === tipo).length;
@@ -89,21 +102,22 @@ export default function Reacciones({ confesionId }: { confesionId: string }) {
       return;
     }
 
-    // Animación
+    if (!puedeInteractuar) {
+      router.push("/verificacion");
+      return;
+    }
+
     setAnimando(tipo);
     setTimeout(() => setAnimando(null), 400);
 
-    // Si ya tengo esa reacción → quitarla
     if (miReaccion === tipo) {
       await supabase
         .from("reacciones")
         .delete()
         .eq("confesion_id", confesionId)
         .eq("user_id", user.id);
-
       setMiReaccion(null);
     } else {
-      // Insertar o actualizar
       await supabase.from("reacciones").upsert(
         {
           confesion_id: confesionId,
@@ -112,11 +126,9 @@ export default function Reacciones({ confesionId }: { confesionId: string }) {
         },
         { onConflict: "confesion_id,user_id" }
       );
-
       setMiReaccion(tipo);
     }
 
-    // Recargar reacciones
     await cargarReacciones();
     router.refresh();
   };
@@ -133,8 +145,14 @@ export default function Reacciones({ confesionId }: { confesionId: string }) {
             <button
               key={r.tipo}
               onClick={() => handleReaccionar(r.tipo)}
-              disabled={cargando}
-              title={!user ? "Inicia sesión para reaccionar" : r.label}
+              disabled={cargando || cargandoSesion}
+              title={
+                !user
+                  ? "Inicia sesión para reaccionar"
+                  : !puedeInteractuar
+                  ? "Verifica tu cuenta para reaccionar"
+                  : r.label
+              }
               className={`
                 group flex items-center gap-2 px-4 py-2 rounded-xl
                 border transition-all duration-300
@@ -161,11 +179,22 @@ export default function Reacciones({ confesionId }: { confesionId: string }) {
           );
         })}
 
-        {/* Aviso login */}
-        {!user && !cargando && (
+        {!cargandoSesion && !user && (
           <p className="text-xs text-texto-suave ml-auto">
             <Link href="/login" className="text-marca hover:text-rosa underline">
               Inicia sesión
+            </Link>{" "}
+            para reaccionar
+          </p>
+        )}
+
+        {!cargandoSesion && user && !puedeInteractuar && (
+          <p className="text-xs text-rosa ml-auto">
+            <Link
+              href="/verificacion"
+              className="text-marca hover:text-rosa underline"
+            >
+              Verifica tu cuenta
             </Link>{" "}
             para reaccionar
           </p>

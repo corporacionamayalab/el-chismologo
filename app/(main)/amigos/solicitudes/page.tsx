@@ -86,30 +86,103 @@ export default function SolicitudesPage() {
 
   const aceptar = async (id: string) => {
     setProcesando(id);
-    await supabase
+
+    const { data, error, status, statusText } = await supabase
       .from("amistades")
       .update({ estado: "aceptada" })
-      .eq("id", id);
+      .eq("id", id)
+      .select();
+
     setProcesando(null);
+
+    // 🔍 DEBUG: ver qué devuelve Supabase
+    console.log("🔍 RESULTADO ACEPTAR:", {
+      id,
+      status,
+      statusText,
+      data,
+      error,
+    });
+
+    if (error) {
+      alert(`❌ Error al aceptar:\n${error.message}\nCódigo: ${error.code}\nDetalles: ${error.details || "sin detalles"}`);
+      return;
+    }
+
+    if (!data || data.length === 0) {
+      alert("⚠️ No se actualizó ninguna fila.\n\nPosibles causas:\n- La policy RLS bloquea el UPDATE\n- No eres el receptor de esta solicitud\n- El id no coincide");
+      return;
+    }
+
+    alert("✅ ¡Solicitud aceptada correctamente!");
     await cargar();
     router.refresh();
   };
 
   const rechazar = async (id: string) => {
     setProcesando(id);
-    await supabase
+
+    const { data, error, status, statusText } = await supabase
       .from("amistades")
       .update({ estado: "rechazada" })
-      .eq("id", id);
+      .eq("id", id)
+      .select();
+
     setProcesando(null);
+
+    console.log("🔍 RESULTADO RECHAZAR:", {
+      id,
+      status,
+      statusText,
+      data,
+      error,
+    });
+
+    if (error) {
+      alert(`❌ Error al rechazar:\n${error.message}\nCódigo: ${error.code}\nDetalles: ${error.details || "sin detalles"}`);
+      return;
+    }
+
+    if (!data || data.length === 0) {
+      alert("⚠️ No se actualizó ninguna fila al rechazar.\n\nPosibles causas:\n- La policy RLS bloquea el UPDATE\n- No eres el receptor de esta solicitud");
+      return;
+    }
+
+    alert("✅ Solicitud rechazada correctamente");
     await cargar();
     router.refresh();
   };
 
   const cancelar = async (id: string) => {
     setProcesando(id);
-    await supabase.from("amistades").delete().eq("id", id);
+
+    const { data, error, status, statusText } = await supabase
+      .from("amistades")
+      .delete()
+      .eq("id", id)
+      .select();
+
     setProcesando(null);
+
+    console.log("🔍 RESULTADO CANCELAR:", {
+      id,
+      status,
+      statusText,
+      data,
+      error,
+    });
+
+    if (error) {
+      alert(`❌ Error al cancelar:\n${error.message}\nCódigo: ${error.code}\nDetalles: ${error.details || "sin detalles"}`);
+      return;
+    }
+
+    if (!data || data.length === 0) {
+      alert("⚠️ No se eliminó ninguna fila.\n\nPosibles causas:\n- La policy RLS bloquea el DELETE\n- No eres el solicitante");
+      return;
+    }
+
+    alert("✅ Solicitud cancelada correctamente");
     await cargar();
     router.refresh();
   };

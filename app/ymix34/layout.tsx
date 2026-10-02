@@ -23,9 +23,10 @@ export default async function ymix34Layout({
 
   if (perfil?.rol !== "admin") redirect("/");
 
-    const enlaces = [
+  const enlaces = [
     { href: "/ymix34", label: "Dashboard", emoji: "📊" },
     { href: "/ymix34/pendientes", label: "Pendientes", emoji: "⏳" },
+    { href: "/ymix34/verificaciones", label: "Verificaciones", emoji: "✅" },
     { href: "/ymix34/confesiones", label: "Confesiones", emoji: "📝" },
     { href: "/ymix34/contactos", label: "Contactos", emoji: "💘" },
     { href: "/ymix34/usuarios", label: "Usuarios", emoji: "👥" },
@@ -35,7 +36,7 @@ export default async function ymix34Layout({
 
   return (
     <div className="min-h-screen bg-fondo">
-            <SessionTimeout />
+      <SessionTimeout />
       {/* Header del panel */}
       <div className="sticky top-0 z-40 bg-fondo-card/95 backdrop-blur-xl border-b border-borde">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
