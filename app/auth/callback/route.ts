@@ -8,9 +8,23 @@ export async function GET(request: Request) {
 
   if (code) {
     const supabase = await createClient();
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    const { error, data } = await supabase.auth.exchangeCodeForSession(code);
 
-    if (!error) {
+    if (!error && data.user) {
+      // Verificar si necesita verificarse
+      const { data: perfil } = await supabase
+        .from("profiles")
+        .select("verificado, exento_verificacion")
+        .eq("id", data.user.id)
+        .single();
+
+      const puedeInteractuar =
+        perfil?.verificado === true || perfil?.exento_verificacion === true;
+
+      if (!puedeInteractuar) {
+        return NextResponse.redirect(`${origin}/verificacion`);
+      }
+
       return NextResponse.redirect(`${origin}${next}`);
     }
   }

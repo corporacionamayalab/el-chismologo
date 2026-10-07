@@ -22,7 +22,7 @@ function LoginContent() {
     setError("");
     setCargando(true);
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
@@ -32,12 +32,29 @@ function LoginContent() {
     if (error) {
       if (error.message.includes("Invalid login credentials")) {
         setError("Email o contraseña incorrectos");
-      } else if (error.message.includes("Email not confirmed")) {
-        setError("Debes verificar tu email antes de iniciar sesión");
       } else {
         setError(error.message);
       }
       return;
+    }
+
+    // Verificar si el usuario necesita verificarse
+    if (data.user) {
+      const { data: perfil } = await supabase
+        .from("profiles")
+        .select("verificado, exento_verificacion")
+        .eq("id", data.user.id)
+        .single();
+
+      const puedeInteractuar =
+        perfil?.verificado === true || perfil?.exento_verificacion === true;
+
+      if (!puedeInteractuar) {
+        // Redirigir a verificación
+        router.push("/verificacion");
+        router.refresh();
+        return;
+      }
     }
 
     router.push("/");
@@ -59,10 +76,9 @@ function LoginContent() {
           </span>
         </Link>
 
-        {/* Aviso de inactividad */}
         {razon === "inactividad" && (
-          <div className="mb-6 p-4 rounded-xl bg-neon/10 border border-neon/30 text-sm">
-            <p className="text-neon font-semibold mb-1">⏰ Sesión cerrada</p>
+          <div className="mb-6 p-4 rounded-xl bg-marca/10 border border-marca/30 text-sm">
+            <p className="text-marca font-semibold mb-1">⏰ Sesión cerrada</p>
             <p className="text-texto-suave text-xs">
               Tu sesión se cerró automáticamente por inactividad. Vuelve a
               iniciar sesión.
@@ -124,7 +140,7 @@ function LoginContent() {
             <button
               type="submit"
               disabled={cargando}
-              className="w-full py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-marca to-rosa hover:from-marca-hover hover:to-rosa-hover transition-all duration-300 glow-marca disabled:opacity-60 disabled:cursor-not-allowed"
+              className="w-full py-3 rounded-xl font-semibold text-white bg-linear-to-r from-marca to-rosa hover:from-marca-hover hover:to-rosa-hover transition-all duration-300 glow-marca disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {cargando ? "Entrando..." : "Entrar"}
             </button>
